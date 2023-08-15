@@ -38,7 +38,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 //todo: 추가회원가입때 받아야할 내용들. 이 아래 두줄 없애야한다.
                 jwtService.sendAccessAndRefreshToken(res, accessToken, null);
                 User user = userRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다."));
-                user.authtorizeAuth(); // 권한 부여
+                user.authtorizeUnAuth(); // 권한 부여 (비인증)
+                //todo: 이제 학생증 사진보고 인증.
             }
 //            else if (oAuth2User.getRole() == ROLE.AUTHING) {
 //                //todo : 회원가입 대기중일때 로그인 시도하면 어쩌지?

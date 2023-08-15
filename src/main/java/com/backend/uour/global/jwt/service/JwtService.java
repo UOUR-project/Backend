@@ -62,9 +62,9 @@ public class JwtService {
     }
 
     // 응답 Refresh Token 헤더에 넣어주기 -> 만료시 -> 이경우에는 AccessToken도 재발급해줘야함.
-    public void sendAccessAndRefreshToken(HttpServletResponse res, String refreshToken, String accessToken){
+    public void sendAccessAndRefreshToken(HttpServletResponse res, String accessToken, String refreshToken){
         res.setStatus(HttpServletResponse.SC_OK); // 200
-        res.setHeader(accessHeader,accessToken); // 헤더에 accessToken 넣어주기
+        res.setHeader(accessHeader, accessToken); // 헤더에 accessToken 넣어주기
         res.setHeader(refreshHeader, refreshToken); // 헤더에 refreshToken 넣어주기
         log.info("Refresh 재발급완료: {}, Access 재발급완료: {}", refreshToken, accessToken);
     }

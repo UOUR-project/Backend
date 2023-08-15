@@ -62,7 +62,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         userRepository.findByRefreshToken(refreshToken)
                 .ifPresent(user -> {
                     String token = reIssueRefreshToken(user); // refresh 토큰 재발급
-                    jwtService.sendAccessAndRefreshToken(res, jwtService.createAccessToken(user.getEmail()),token); // access, refresh 토큰을 보내줌
+                    jwtService.sendAccessAndRefreshToken(res, jwtService.createAccessToken(user.getEmail()), token); // access, refresh 토큰을 보내줌
                 });
         // 만약 유저를 refresh 로 찾고, 있다면 access 토큰을 만들어서 보내주고, refresh 토큰을 재발급해서 db에 저장해준다.
     }
