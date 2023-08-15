@@ -33,13 +33,9 @@ public class CustomOAuth2User extends DefaultOAuth2User {
      */
     // 나중에 ROLE_UNAUTH로 되어있으면 쟤네들 추가로 받아야함.
     public CustomOAuth2User(Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes, String nameAttributeKey,
-                            String email, ROLE role, SCHOOL school, String major, String studentId, String nickname) {
+                            String email, ROLE role) {
         super(authorities, attributes, nameAttributeKey);
         this.email = email;
         this.role = role;
-        this.school = school;
-        this.major = major;
-        this.studentId = studentId;
-        this.nickname = nickname;
     }
 }

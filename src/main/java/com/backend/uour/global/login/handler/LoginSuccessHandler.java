@@ -30,6 +30,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String access = jwtService.createAccessToken(email); // access 토큰 생성
         String refresh = jwtService.createRefreshToken(); // refresh 토큰 생성
 
+        jwtService.sendAccessAndRefreshToken(res, access, refresh);
         // refresh 토큰을 DB에 저장
         userRepository.findByEmail(email)
                 .ifPresent(user -> {

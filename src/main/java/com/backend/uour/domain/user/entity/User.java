@@ -43,6 +43,12 @@ public class User {
     public void authtorizeAuth(){ // 권한을 인증된 권한으로 변경
         this.role = ROLE.AUTH;
     }
+    public void authtorizeAdmin(){
+        this.role = ROLE.ADMIN;
+    }
+    public void authtorizeAuthing(){
+        this.role = ROLE.AUTHING;
+    }
     public void passwordEncode(PasswordEncoder passwordEncoder){ // 생으로 들어오는 비밀번호 암호화
         this.password = passwordEncoder.encode(this.password);
     }
