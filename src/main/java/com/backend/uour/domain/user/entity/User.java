@@ -8,6 +8,7 @@ import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -16,6 +17,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 자동생성되는 db의 pk
+    @Column(unique = true)
     private String email;
     private String password;
     private String nickname;

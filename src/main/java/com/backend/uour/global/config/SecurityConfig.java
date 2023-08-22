@@ -27,7 +27,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import jakarta.servlet.DispatcherType;
-
+import org.springframework.web.filter.CorsFilter;
 
 
 @Configuration
@@ -42,6 +42,7 @@ public class SecurityConfig {
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CorsFilter corsFilter;
 
     // 필터를 만들어보자
     @Bean
@@ -51,6 +52,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable) // httpBasic 사용하지 않음 -> Bearer 방식 사용
                 .csrf(AbstractHttpConfigurer::disable) // csrf 사용하지 않음 -> jwt 토큰 사용
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용하지 않음 -> jwt 토큰 사용
+                .addFilter(corsFilter) // corsFilter 등록
                 .authorizeHttpRequests(ar -> ar // 요청에 대한 인가 설정
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll() // forward 요청은 모두 허용 -> forward 요청은 서버 내부에서 다른 서블릿이나 JSP를 호출할 때 사용하는 방식이다.
                         .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
@@ -115,4 +117,6 @@ public class SecurityConfig {
     public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() throws Exception{
         return new JwtAuthenticationProcessingFilter(jwtService,userRepository);
     }
+
+
 }
