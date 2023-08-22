@@ -57,15 +57,15 @@ public class JwtService {
     // 응답 Access Token 헤더에 넣어주기
     public void sendAccessToken(HttpServletResponse res, String accessToken){
         res.setStatus(HttpServletResponse.SC_OK); // 200
-        res.setHeader(accessHeader, accessToken); // 헤더에 accessToken 넣어주기
+        res.setHeader(accessHeader, BEARER + accessToken); // 헤더에 accessToken 넣어주기
         log.info("Access 재발급완료 : {}", accessToken);
     }
 
     // 응답 Refresh Token 헤더에 넣어주기 -> 만료시 -> 이경우에는 AccessToken도 재발급해줘야함.
     public void sendAccessAndRefreshToken(HttpServletResponse res, String accessToken, String refreshToken){
         res.setStatus(HttpServletResponse.SC_OK); // 200
-        res.setHeader(accessHeader, accessToken); // 헤더에 accessToken 넣어주기
-        res.setHeader(refreshHeader, refreshToken); // 헤더에 refreshToken 넣어주기
+        res.setHeader(accessHeader, BEARER + accessToken); // 헤더에 accessToken 넣어주기
+        res.setHeader(refreshHeader, BEARER + refreshToken); // 헤더에 refreshToken 넣어주기
         log.info("Refresh 재발급완료: {}, Access 재발급완료: {}", refreshToken, accessToken);
     }
 
@@ -81,7 +81,6 @@ public class JwtService {
                 .filter(access -> access.startsWith(BEARER)) // accessHeader가 BEARER로 시작하는지 확인
                 .map(access -> access.replace(BEARER, "")); // BEARER를 ""로 바꿔줌 -> 토큰만 추출
     }
-
     // Access Token에서 이메일 추출
     // 순서 -> JWT.require()로 검증, verify()에서 Access Token 검증, 유효하면 getClaim으로 이메일 추출
     public Optional<String> extractEmail(String accessToken){
