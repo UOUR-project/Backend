@@ -2,18 +2,32 @@ package com.backend.uour.domain.user.controller;
 
 import com.backend.uour.domain.user.dto.Oauth2UserSignUpDto;
 import com.backend.uour.domain.user.dto.UserSignUpDto;
+import com.backend.uour.domain.user.entity.IdImage;
+import com.backend.uour.domain.user.entity.User;
 import com.backend.uour.domain.user.service.UserService;
 import com.backend.uour.global.jwt.service.JwtService;
+import com.backend.uour.domain.user.service.IdImageService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserService userService;
     private final JwtService jwtService;
+    private final IdImageService idImageService;
 
     @PostMapping("/oauth2/sign-up")
     public String oauth2SignUp(@RequestBody Oauth2UserSignUpDto oauth2SignUpDto, @RequestHeader("Authorization") String authorization) throws Exception{
@@ -37,24 +51,10 @@ public class UserController {
         return "success";
     }
 
-    @GetMapping("/test/auth")
-    @Secured("ROLE_AUTH")
-    public @ResponseBody String testAuth(){
-        return "auth";
-    }
-    @GetMapping("/test/unauth")
-    @Secured("ROLE_UNAUTH")
-    public @ResponseBody String testUnAuth(){
-        return "unauth";
-    }
-    @GetMapping("/test/admin")
-    @Secured("ROLE_ADMIN")
-    public @ResponseBody String testAdmin(){
-        return "admin";
-    }
-    @GetMapping("/test/authing")
-    @Secured("ROLE_AUTHING")
-    public @ResponseBody String testAuthing(){
-        return "authing";
+    @PostMapping(value = "/id-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Long saveIdImage(HttpServletRequest req, @RequestParam("image") MultipartFile image, IdImage idImage) throws IOException {
+        System.out.println(image);
+        System.out.println(idImage);
+        return idImageService.saveIdImage(image,idImage);
     }
 }
