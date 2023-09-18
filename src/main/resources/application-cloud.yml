@@ -1,0 +1,12 @@
+cloud:
+  aws:
+    credentials:
+      access-key: (s3에서 받은 accessKey입력)
+      secret-key: (s3에서 받은 secretKey입력)
+    s3:
+      bucket: uour_images
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+

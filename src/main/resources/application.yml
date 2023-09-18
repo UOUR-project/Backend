@@ -1,6 +1,6 @@
 server:
-  address: 192.168.1.103
-#  address: 127.0.0.1
+#  address: 192.168.1.103
+  address: 127.0.0.1
   port: 8080
   servlet:
     context-path: /
@@ -13,14 +13,19 @@ spring:
   profiles:
     group:
       # active properties
-      "local" : "local, jwt, oauth"
+      "local" : "local, jwt, oauth, cloud"
     active : local
 ---
+
 
 spring:
   config:
     activate:
       on-profile: "local"
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
