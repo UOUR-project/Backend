@@ -2,6 +2,7 @@ package com.backend.uour.global.jwt.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.backend.uour.domain.user.entity.User;
 import com.backend.uour.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -95,6 +96,7 @@ public class JwtService {
             return Optional.empty();
         }
     }
+
     //AccessToken 헤더 설정
     public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
         response.setHeader(accessHeader, accessToken);

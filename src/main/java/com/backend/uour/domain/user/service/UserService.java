@@ -1,15 +1,20 @@
 package com.backend.uour.domain.user.service;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.backend.uour.domain.user.dto.Oauth2UserSignUpDto;
 import com.backend.uour.domain.user.dto.UserSignUpDto;
+import com.backend.uour.domain.user.dto.UserUpdateDto;
 import com.backend.uour.domain.user.entity.User;
 import com.backend.uour.domain.user.repository.UserRepository;
 import com.backend.uour.global.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 
 // 자체 회원가입시 사용하는 회원가입 Api의 로직이다. -> 자체이기 때문에 모든일 다 처리
@@ -64,5 +69,61 @@ public class UserService {
             log.warn("토큰이 올바르지 않습니다.");
         }
     }
+
+    public void deleteUser(String temp) throws Exception{
+        if(jwtService.extractEmail(temp).isPresent()){
+            // 일단 동일하지만 로직 나누기.
+            // 소셜 로그인 삭제 절차
+            if(jwtService.extractEmail(temp).get().endsWith("socialUser.com")){
+                User user = userRepository.findByEmail(jwtService.extractEmail(temp).get()).get();
+                userRepository.delete(user);
+            }
+            // 자체 로그인 삭제 절차
+            else{
+                User user = userRepository.findByEmail(jwtService.extractEmail(temp).get()).get();
+                userRepository.delete(user);
+            }
+        }
+        else{
+            log.warn("토큰이 올바르지 않습니다.");
+        }
+    }
+
+    public void updateUser(UserUpdateDto updateDto, String temp) throws Exception{
+        // 확인 절차.
+        if (jwtService.extractEmail(temp).isPresent()) {
+            // 소셜 로그인 수정 절차
+            if (jwtService.extractEmail(temp).get().endsWith("socialUser.com")) {
+                User user = userRepository.findByEmail(jwtService.extractEmail(temp).get())
+                        .orElseThrow(() -> new Exception("소셜 회원가입이 되어있지 않습니다."));
+                user.setNickname(updateDto.getNickname());
+                user.setSchool(updateDto.getSchool());
+                user.setMajor(updateDto.getMajor());
+                user.setStudentId(updateDto.getStudentId());
+                System.out.println("소셜 진행");
+            }
+            else {
+                // 자체 로그인 수정 절차
+                User user = userRepository.findByEmail(jwtService.extractEmail(temp).get())
+                        .orElseThrow(() -> new Exception("자체 회원가입이 되어있지 않습니다."));
+                if(passwordEncoder.matches(updateDto.getPassword(),user.getPassword())){
+                    user.setNickname(updateDto.getNickname());
+                    user.setEmail(updateDto.getEmail());
+                    user.setSchool(updateDto.getSchool());
+                    user.setMajor(updateDto.getMajor());
+                    user.setStudentId(updateDto.getStudentId());
+                    user.setPassword(updateDto.getNewPassword());
+                    System.out.println("로컬 진행");
+                }
+                else{
+                    log.warn("비밀번호가 일치하지 않습니다.");
+                }
+            }
+        }
+        else {
+            log.warn("토큰이 올바르지 않습니다.");
+        }
+    }
 }
+
 

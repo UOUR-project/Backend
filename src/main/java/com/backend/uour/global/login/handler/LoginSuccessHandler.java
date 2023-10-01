@@ -27,8 +27,8 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse res, Authentication authentication){
         String email = extractUsername(authentication);
-        String access = "Bearer " + jwtService.createAccessToken(email); // access 토큰 생성
-        String refresh = "Bearer " + jwtService.createRefreshToken(); // refresh 토큰 생성
+        String access = jwtService.createAccessToken(email); // access 토큰 생성
+        String refresh = jwtService.createRefreshToken(); // refresh 토큰 생성
 
 
         jwtService.sendAccessAndRefreshToken(res, access, refresh);
