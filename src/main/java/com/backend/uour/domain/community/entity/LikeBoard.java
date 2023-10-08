@@ -11,7 +11,6 @@ import org.hibernate.annotations.OnDeleteAction;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"userId", "boardId"})})
 @Builder
 public class LikeBoard {
     @Id
@@ -19,13 +18,9 @@ public class LikeBoard {
     private Long Id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="boardId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Board board;
-
-
 }

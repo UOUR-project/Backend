@@ -6,8 +6,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class Oauth2UserSignUpDto {
+public class AdditionUserSignUpDto {
     private String nickname;
+    private String name;
     private SCHOOL school; // -> 추가정보
     private String major; // -> 추가정보
     private String studentId; // -> 추가정보
