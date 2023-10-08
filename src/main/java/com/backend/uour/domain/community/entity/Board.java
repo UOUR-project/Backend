@@ -8,9 +8,10 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
-@AllArgsConstructor
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -21,26 +22,39 @@ public class Board {
     private Long id;
     private String title;
     private String content;
+
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User author;
+
     @OneToMany(mappedBy = "board")
-    private Set<Comment> comment;
+    private List<LikeBoard> likeBoards;
+
+    @OneToMany(mappedBy = "board")
+    private List<Scrap> scrapBoards;
+
     @ColumnDefault("0")
     private int view;
-    private LocalDateTime WriteTime;
+    private LocalDateTime writeTime;
     private LocalDateTime updateTime;
+
+    private CATEGORY category;
 
     public void addView(){
         this.view++;
     }
 
+    public void updateUpdateTime(){
+        this.updateTime = LocalDateTime.now();
+    }
+
     @Builder
-    private Board(String title, String content, User author){
+    private Board(String title, String content, User author,CATEGORY category){
         this.title = title;
         this.content = content;
         this.author = author;
-        this.WriteTime = LocalDateTime.now();
+        this.writeTime = LocalDateTime.now();
         this.updateTime = LocalDateTime.now();
+        this.category = category;
     }
 }

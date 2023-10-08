@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 // 수정 가능한 것들 리스트
 public class UserUpdateDto {
     private String nickname;
