@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,14 +43,13 @@ public class User {
     private String studentId; // -> 추가정보
 
     @OneToMany(mappedBy = "pointed")
-    private List<Blame> blames;
-
+    private List<Blame> blames = new ArrayList<>();
     // 좋아요, 스크랩
     @OneToMany(mappedBy = "user")
-    private List<LikeBoard> likeBoards;
+    private List<LikeBoard> likeBoards = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<Scrap> scrapBoards;
+    private List<Scrap> scrapBoards = new ArrayList<>();
 
     public void authtorizeUnAuth(){ // 권한을 인증되지 않은 권한으로 변경
         this.role = ROLE.UNAUTH;
@@ -70,4 +70,15 @@ public class User {
     public void updateRefreshToken(String refreshToken){ // 리프레시 토큰 갱신
         this.refreshToken = refreshToken;
     }
+    public void addLikeBoard(LikeBoard likeBoard){
+        this.likeBoards.add(likeBoard);
+        if (likeBoard.getUser() != this)
+            likeBoard.setUser(this);
+    }
+    public void addScrapBoard(Scrap scrap){
+        this.scrapBoards.add(scrap);
+        if (scrap.getUser() != this)
+            scrap.setUser(this);
+    }
+
 }

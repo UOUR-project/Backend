@@ -1,20 +1,16 @@
 package com.backend.uour.domain.community.service;
-import com.backend.uour.domain.community.dto.BoardDetailDto;
-import com.backend.uour.domain.community.dto.BoardListMicroDto;
-import com.backend.uour.domain.community.dto.BoardPostDto;
-import com.backend.uour.domain.community.dto.BoardListDto;
-import com.backend.uour.domain.community.entity.Board;
+import com.backend.uour.domain.community.dto.*;
 import com.backend.uour.domain.community.entity.CATEGORY;
-import com.backend.uour.domain.user.entity.User;
 import org.springframework.data.domain.Slice;
-import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface BoardService {
-    void save(BoardPostDto board, String accessToken) throws Exception;
 
-    void update(Long boardId, BoardPostDto board, String accessToken) throws Exception;
+    void save(BoardPostDto board, List<MultipartFile> photos, String accessToken) throws Exception;
+
+    void update(Long boardId, BoardPostDto board,List<MultipartFile> photos, String accessToken) throws Exception;
 
     void delete(Long boardId, String accessToken) throws Exception;
 
@@ -31,6 +27,8 @@ public interface BoardService {
     Slice<BoardListDto> getByLike(String accessToken, int page) throws Exception;
     Slice<BoardListDto> getByScrap(String authorization, int page) throws Exception; // 스크랩별 정리
     Slice<BoardListMicroDto> getByPopular(int page); // 인기순 정리
+
+    Slice<BoardListMicroMicroDto> getByPopularMicroMicro(int page);
 
     void like(Long boardId, String authorization) throws Exception;
 

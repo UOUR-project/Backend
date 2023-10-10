@@ -6,6 +6,7 @@ import com.backend.uour.domain.community.entity.Comment;
 import com.backend.uour.domain.community.entity.LikeBoard;
 import com.backend.uour.domain.community.entity.LikeComment;
 import com.backend.uour.domain.community.mapper.CommentMap;
+import com.backend.uour.domain.community.repository.BoardRepository;
 import com.backend.uour.domain.community.repository.CommentRepository;
 import com.backend.uour.domain.community.repository.LikeBoardRepository;
 import com.backend.uour.domain.community.repository.LikeCommentRepository;
@@ -36,7 +37,7 @@ public class CommentServiceImpl implements CommentService{
     private final CommentMap commentMap;
     private final CommentRepository commentRepository;
     private final LikeCommentRepository likeCommentRepository;
-
+    private final BoardRepository boardRepository;
     @Override
     public void save(Long boardId, CommentPostDto commentDto, String accessToken) throws Exception{
         User author = userRepository.findByEmail(jwtService.extractEmail(accessToken)
@@ -45,9 +46,12 @@ public class CommentServiceImpl implements CommentService{
         Comment newcomment = commentMap.toEntity(commentDto,author,boardId);
         if(newcomment.getCommentGroup() != -1){
             if(commentRepository.findById(newcomment.getCommentGroup())
-                    .orElseThrow(NoCommentException::new).getCommentGroup() == -1)
+                    .orElseThrow(NoCommentException::new).getCommentGroup() == -1) {
                 //대댓글 저장
                 commentRepository.save(newcomment);
+                boardRepository.findById(boardId).get().addComment(newcomment);
+            }
+
             else
                 throw new NoCommentException();
         }

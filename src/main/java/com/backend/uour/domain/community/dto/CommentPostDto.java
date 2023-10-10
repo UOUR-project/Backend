@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Builder
 @Getter
-@RequiredArgsConstructor
-@AllArgsConstructor
 public class CommentPostDto {
     private String content;
     private LocalDateTime WriteTime;
