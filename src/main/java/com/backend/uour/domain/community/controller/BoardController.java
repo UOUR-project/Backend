@@ -8,12 +8,20 @@ import com.backend.uour.domain.community.service.BoardService;
 import com.backend.uour.global.jwt.service.JwtService;
 import com.backend.uour.global.network.ResultDTO;
 import com.backend.uour.global.network.STATUS;
+import com.fasterxml.jackson.databind.deser.std.UUIDDeserializer;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,11 +33,12 @@ public class BoardController {
     private final JwtService jwtService;
 
     @PostMapping("posting")
-    @Secured("ROLE_AUTHING")
-    public ResponseEntity<?> postBoard(@RequestBody BoardPostDto boardPostDto, HttpServletRequest req) throws Exception {
+//    @Secured("ROLE_AUTHING")
+    public ResponseEntity<?> postBoard(@RequestPart BoardPostDto boardPostDto,
+                                       @RequestPart(required = false) List<MultipartFile> photos, HttpServletRequest req) throws Exception {
         try {
             String accessToken = jwtService.extractAccessToken(req).orElseThrow(WrongJwtException::new);
-            boardService.save(boardPostDto, accessToken);
+            boardService.save(boardPostDto, photos ,accessToken);
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, null);
             return ResponseEntity.ok(resultDTO);
         } catch (Exception e) {
@@ -51,10 +60,10 @@ public class BoardController {
     }
 
     @PutMapping("board/{boardId}")
-    public ResponseEntity<?> updateBoard(@PathVariable("boardId") Long boardId, @RequestBody BoardPostDto boardPostDto, HttpServletRequest req) {
+    public ResponseEntity<?> updateBoard(@PathVariable("boardId") Long boardId, @RequestPart BoardPostDto boardPostDto, @RequestPart(required = false) List<MultipartFile> photos , HttpServletRequest req) {
         try {
             String accessToken = jwtService.extractAccessToken(req).orElseThrow(WrongJwtException::new);
-            boardService.update(boardId, boardPostDto, accessToken);
+            boardService.update(boardId, boardPostDto, photos, accessToken);
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, null);
             return ResponseEntity.ok(resultDTO);
         } catch (Exception e) {
@@ -145,6 +154,17 @@ public class BoardController {
             return ResponseEntity.badRequest().body(resultDTO);
         }
     }
+
+    @GetMapping("board/popular/micro")
+    public ResponseEntity<?> getBoardListByPopularMicroMicro(@RequestParam int page) {
+        try {
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, boardService.getByPopularMicroMicro(page));
+            return ResponseEntity.ok(resultDTO);
+        } catch (Exception e) {
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);
+            return ResponseEntity.badRequest().body(resultDTO);
+        }
+    }
 // 버튼 동작 코드. -> 토글 구조이기 떄문에 구현에 신경써야함.
 
     @PostMapping("like")
@@ -176,5 +196,9 @@ public class BoardController {
             return ResponseEntity.badRequest().body(resultDTO);
         }
     }
+
+    // 사진 업로드 테스트
+
+
 }
 

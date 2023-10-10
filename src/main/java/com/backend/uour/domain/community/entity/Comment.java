@@ -1,13 +1,12 @@
 package com.backend.uour.domain.community.entity;
 
-import com.backend.uour.domain.community.mapper.BooleanToYNConverter;
 import com.backend.uour.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor

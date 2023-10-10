@@ -3,12 +3,19 @@ package com.backend.uour.domain.community.mapper;
 import com.backend.uour.domain.community.dto.*;
 import com.backend.uour.domain.community.entity.Board;
 
+import com.backend.uour.domain.community.entity.Comment;
+import com.backend.uour.domain.community.entity.Photo;
 import com.backend.uour.domain.community.repository.CommentRepository;
 import com.backend.uour.domain.community.repository.LikeBoardRepository;
+import com.backend.uour.domain.community.repository.PhotoRepository;
+import com.backend.uour.domain.community.service.PhotoHandler;
 import com.backend.uour.domain.user.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -16,9 +23,10 @@ import org.springframework.stereotype.Service;
 public class BoardMap {
     private final LikeBoardRepository likeBoardRepository;
     private final CommentRepository commentRepository;
-
+    private final PhotoRepository photoRepository;
+    private final CommentMap commentMap;
     // Post mapper
-    public Board ToEntity(BoardPostDto dto, User author){
+    public Board ToEntity(BoardPostDto dto, User author) throws Exception {
         return Board.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
@@ -36,7 +44,7 @@ public class BoardMap {
     }
 
     // detail mapper
-    public BoardDetailDto ToDetailDto(Board board){
+    public BoardDetailDto ToDetailDto(Board board, List<Long> photoId){
         return BoardDetailDto.builder()
                 .title(board.getTitle())
                 .content(board.getContent())
@@ -44,6 +52,8 @@ public class BoardMap {
                 .category(board.getCategory())
                 .updatedTime(board.getUpdateTime())
                 .writedTime(board.getWriteTime())
+                .photoId(photoId)
+                .comments(commentRepository.findByBoardId(board.getId()).stream().map(commentMap::tolistDto).collect(Collectors.toList()))
                 .views(board.getView())
                 .commentsCount(commentRepository.countByBoardId(board.getId()))
                 .likes(likeBoardRepository.countByBoardId(board.getId()))
@@ -51,6 +61,13 @@ public class BoardMap {
     }
 
     public BoardListDto toListDto(Board board){
+        Long thumb;
+        if (!board.getPhoto().isEmpty()){
+            thumb = board.getPhoto().get(0).getId();
+        }
+        else{
+            thumb = -1L;
+        }
         return BoardListDto.builder()
                 .title(board.getTitle())
                 .content(board.getContent())
@@ -58,6 +75,7 @@ public class BoardMap {
                 .likes(likeBoardRepository.countByBoardId(board.getId()))
                 .comments(commentRepository.countByBoardId(board.getId()))
                 .authorDto(toAuthorDto(board.getAuthor()))
+                .thumbnailId(thumb)
                 .views(board.getView())
                 .build();
     }
@@ -69,6 +87,11 @@ public class BoardMap {
                 .likes(likeBoardRepository.countByBoardId(board.getId()))
                 .comments(commentRepository.countByBoardId(board.getId()))
                 .views(board.getView())
+                .build();
+    }
+    public BoardListMicroMicroDto toListMicroMicroDto(Board board){
+        return BoardListMicroMicroDto.builder()
+                .title(board.getTitle())
                 .build();
     }
 }

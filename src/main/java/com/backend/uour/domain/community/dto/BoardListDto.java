@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
 // 카테고리별 게시판 보여줄때 필요한 DTO
@@ -20,4 +19,5 @@ public class BoardListDto {
     private int likes;
     private int comments;
     private CATEGORY category;
+    private Long thumbnailId;
 }

@@ -17,6 +17,7 @@ spring:
     active : local
 ---
 
+absolutePath: "/Users/minseokey/Uour/images"
 
 spring:
   config:

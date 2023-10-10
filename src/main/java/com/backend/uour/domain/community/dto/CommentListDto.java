@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 
 @Builder
 @Getter
-@RequiredArgsConstructor
 @AllArgsConstructor
 public class CommentListDto {
     private String content;
