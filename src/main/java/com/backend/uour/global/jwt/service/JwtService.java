@@ -35,6 +35,7 @@ public class JwtService {
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String EMAIL_CLAIM = "email";
     private static final String BEARER = "Bearer ";
+
     // Access Token 생성
     // claim에 이메일 넣기
     public String createAccessToken(String email){
@@ -45,6 +46,7 @@ public class JwtService {
                 .withClaim(EMAIL_CLAIM,email)
                 .sign(Algorithm.HMAC512(secretKey));
     }
+
     // Refresh Token 생성
     // claim에 이메일조차 없이 ㄱㄱ
     public String createRefreshToken(){
@@ -59,7 +61,7 @@ public class JwtService {
     public void sendAccessToken(HttpServletResponse res, String accessToken){
         res.setStatus(HttpServletResponse.SC_OK); // 200
         res.setHeader(accessHeader, BEARER + accessToken); // 헤더에 accessToken 넣어주기
-        log.info("Access 재발급완료 : {}", accessToken);
+        log.info("Access 재발급완료 : {}",BEARER + accessToken);
     }
 
     // 응답 Refresh Token 헤더에 넣어주기 -> 만료시 -> 이경우에는 AccessToken도 재발급해줘야함.
@@ -67,7 +69,7 @@ public class JwtService {
         res.setStatus(HttpServletResponse.SC_OK); // 200
         res.setHeader(accessHeader, BEARER + accessToken); // 헤더에 accessToken 넣어주기
         res.setHeader(refreshHeader, BEARER + refreshToken); // 헤더에 refreshToken 넣어주기
-        log.info("Refresh 재발급완료: {}, Access 재발급완료: {}", refreshToken, accessToken);
+        log.info("Refresh 재발급완료: {}, Access 재발급완료: {}",BEARER + refreshToken,BEARER + accessToken);
     }
 
     // 요청 헤더에서 Refresh Token 추출

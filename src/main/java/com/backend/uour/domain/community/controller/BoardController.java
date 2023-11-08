@@ -33,7 +33,7 @@ public class BoardController {
     private final JwtService jwtService;
 
     @PostMapping("posting")
-//    @Secured("ROLE_AUTHING")
+    @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
     public ResponseEntity<?> postBoard(@RequestPart BoardPostDto boardPostDto,
                                        @RequestPart(required = false) List<MultipartFile> photos, HttpServletRequest req) throws Exception {
         try {
@@ -48,6 +48,7 @@ public class BoardController {
     }
 
     @GetMapping("board/{boardId}")
+    @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
     public ResponseEntity<?> getBoardDetail(@PathVariable("boardId") Long boardId) {
         try {
             BoardDetailDto board = boardService.get(boardId);
@@ -60,6 +61,7 @@ public class BoardController {
     }
 
     @PutMapping("board/{boardId}")
+    @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
     public ResponseEntity<?> updateBoard(@PathVariable("boardId") Long boardId, @RequestPart BoardPostDto boardPostDto, @RequestPart(required = false) List<MultipartFile> photos , HttpServletRequest req) {
         try {
             String accessToken = jwtService.extractAccessToken(req).orElseThrow(WrongJwtException::new);
@@ -73,6 +75,7 @@ public class BoardController {
     }
 
     @DeleteMapping("board/{boardId}")
+    @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
     public ResponseEntity<?> deleteBoard(@PathVariable("boardId") Long boardId, HttpServletRequest req) {
         try {
             String accessToken = jwtService.extractAccessToken(req).orElseThrow(WrongJwtException::new);
@@ -86,6 +89,7 @@ public class BoardController {
     }
 
     @GetMapping("/category/{category}")
+    // 일반 사용자도 보기는 가능.
     public ResponseEntity<?> getBoardListByCategory(@PathVariable("category") CATEGORY category, @RequestParam int page) {
         try {
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, boardService.getByCategory(category, page));
@@ -97,6 +101,7 @@ public class BoardController {
     }
 
     @GetMapping("board/user")
+    // 일반 사용자도 보기는 가능.
     public ResponseEntity<?> getBoardListByUser(@RequestParam Long user, @RequestParam int page) {
         try {
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, boardService.getByUser(user, page));
@@ -108,6 +113,7 @@ public class BoardController {
     }
 
     @GetMapping("board/search")
+    // 일반 사용자도 보기는 가능.
     public ResponseEntity<?> getBoardListBySearch(@RequestParam String search, @RequestParam int page) {
         try {
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, boardService.getBySearch(search, page));
@@ -119,6 +125,7 @@ public class BoardController {
     }
 
     @GetMapping("board/like")
+    @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
     public ResponseEntity<?> getBoardListByLike(HttpServletRequest req, @RequestParam int page) {
         try {
             String accessToken = jwtService.extractAccessToken(req)
@@ -132,6 +139,7 @@ public class BoardController {
     }
 
     @GetMapping("board/scrap")
+    @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
     public ResponseEntity<?> getBoardListByScrap(HttpServletRequest req, @RequestParam int page) {
         try {
             String accessToken = jwtService.extractAccessToken(req)
@@ -145,6 +153,7 @@ public class BoardController {
     }
 
     @GetMapping("board/popular")
+    // 일반 사용자도 보기는 가능.
     public ResponseEntity<?> getBoardListByPopular(@RequestParam int page) {
         try {
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, boardService.getByPopular(page));
@@ -156,6 +165,7 @@ public class BoardController {
     }
 
     @GetMapping("board/popular/micro")
+    // 일반 사용자도 보기는 가능.
     public ResponseEntity<?> getBoardListByPopularMicroMicro(@RequestParam int page) {
         try {
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, boardService.getByPopularMicroMicro(page));
@@ -168,6 +178,7 @@ public class BoardController {
 // 버튼 동작 코드. -> 토글 구조이기 떄문에 구현에 신경써야함.
 
     @PostMapping("like")
+    @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
     public ResponseEntity<?> likeBoard(@RequestParam Long boardId, HttpServletRequest req) {
         try {
             String accessToken = jwtService.extractAccessToken(req)
@@ -183,22 +194,18 @@ public class BoardController {
     }
 
     @PostMapping("scrap")
+    @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
     public ResponseEntity<?> scrapBoard(@RequestParam Long boardId, HttpServletRequest req) {
         try {
             String accessToken = jwtService.extractAccessToken(req)
                     .orElseThrow(WrongJwtException::new);
-            boardService.scrap(boardId,accessToken);
-            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK,null);
+            boardService.scrap(boardId, accessToken);
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, null);
             return ResponseEntity.ok(resultDTO);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);
             return ResponseEntity.badRequest().body(resultDTO);
         }
     }
-
-    // 사진 업로드 테스트
-
-
 }
 

@@ -3,6 +3,12 @@ package com.backend.uour.domain.community.service;
 import com.backend.uour.domain.community.dto.*;
 import com.backend.uour.domain.community.entity.*;
 import com.backend.uour.domain.community.repository.*;
+import com.backend.uour.domain.photo.dto.PhotoDto;
+import com.backend.uour.domain.photo.dto.PhotoResponseDto;
+import com.backend.uour.domain.photo.entity.Photo;
+import com.backend.uour.domain.photo.repository.PhotoRepository;
+import com.backend.uour.domain.photo.service.PhotoHandler;
+import com.backend.uour.domain.photo.service.PhotoService;
 import com.backend.uour.domain.user.entity.User;
 import com.backend.uour.domain.community.mapper.BoardMap;
 import com.backend.uour.domain.user.repository.UserRepository;
@@ -30,6 +36,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @Transactional
+
 public class BoardServiceImpl implements BoardService {
     private final LikeBoardRepository likeBoardRepository;
     private final UserRepository userRepository;
@@ -40,7 +47,6 @@ public class BoardServiceImpl implements BoardService {
     private final PhotoHandler photoHandler;
     private final PhotoRepository photoRepository;
     private final PhotoService photoService;
-    private final CommentRepository commentRepository;
 
     @Override
     public void save(BoardPostDto board, List<MultipartFile> photos, String accessToken) throws Exception {
@@ -49,7 +55,6 @@ public class BoardServiceImpl implements BoardService {
                 .orElseThrow(NoUserException::new);
         Board newboard = boardMap.ToEntity(board,author);
         List<Photo> photoList = photoHandler.parseFileInfo(newboard,photos);
-        System.out.println(photoList);
         if (!photoList.isEmpty()){
             for(Photo photo : photoList){
                 newboard.addPhoto(photoRepository.save(photo));
@@ -81,11 +86,12 @@ public class BoardServiceImpl implements BoardService {
             }
             else {  // DB에 한 장 이상 존재
                 if(CollectionUtils.isEmpty(multipartList)) { // 전달되어온 파일 아예 x
-                    // 파일 삭제
+                    // 원래 있던 파일 삭제
                     for(Photo dbPhoto : dbPhotoList)
-                        photoService.deletePhoto(dbPhoto);
+                        photoService.deletePhoto(dbPhoto); // 파일 삭제
+                    photoRepository.deleteAllByBoardId(boardId); // DB에서 사진 정보 삭제
                 }
-                else {  // 전달되어온 파일 한 장 이상 존재
+                else {  // 전달되어온 파일 한 장 이상 존재 -> 원래도 사진이 있었고, 새로 들어오기도 함, 중복을 잡아야 한다.
 
                     // DB에 저장되어있는 파일 원본명 목록
                     List<String> dbOriginNameList = new ArrayList<>();
@@ -97,8 +103,10 @@ public class BoardServiceImpl implements BoardService {
                         // DB의 파일 원본명 얻어오기
                         String dbOrigFileName = dbPhotoDto.getOrigFileName();
 
-                        if(!multipartList.contains(dbOrigFileName))  // 서버에 저장된 파일들 중 전달되어온 파일이 존재하지 않는다면
+                        if(!multipartList.contains(dbOrigFileName)) {  // 서버에 저장된 파일들 중 전달되어온 파일이 존재하지 않는다면
                             photoService.deletePhoto(dbPhoto);  // 파일 삭제
+                            photoRepository.delete(dbPhoto);   // DB에서 사진 정보 삭제
+                        }
                         else  // 그것도 아니라면
                             dbOriginNameList.add(dbOrigFileName);	// DB에 저장할 파일 목록에 추가
                     }
@@ -129,7 +137,9 @@ public class BoardServiceImpl implements BoardService {
                 .orElseThrow(NoUserException::new);
         Board board = boardRepository.findById(boardId).orElseThrow(NoPostingException::new);
         if (board.getAuthor().equals(author)) {
-            photoRepository.deleteAllByBoardId(boardId);
+            for (Photo photo : board.getPhoto())
+                photoService.deletePhoto(photo); // 사진 자체 삭제
+            photoRepository.deleteAllByBoardId(boardId); // DB에서 사진 정보 삭제
             boardRepository.delete(board);
         } else {
             throw new NotSameAuthorException();

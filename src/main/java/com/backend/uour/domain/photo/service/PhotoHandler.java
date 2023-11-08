@@ -1,10 +1,10 @@
-package com.backend.uour.domain.community.service;
+package com.backend.uour.domain.photo.service;
 
 import com.backend.uour.domain.community.entity.Board;
-import com.backend.uour.domain.community.entity.Photo;
-import lombok.AllArgsConstructor;
+import com.backend.uour.domain.photo.entity.Id_Photo;
+import com.backend.uour.domain.photo.entity.Photo;
+import com.backend.uour.domain.user.entity.StudentId;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -87,5 +87,61 @@ public class PhotoHandler {
             }
         }
         return filelist;
+    }
+    public Id_Photo parseFileInfoStudentId(MultipartFile multipartFile, StudentId studentId) throws Exception{
+
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String currentDate = now.format(dateTimeFormatter);
+
+        // TODO : S3 기반의 저장소로 연동되도록 변경하기.
+        // 파일을 저장할 세부경로 지정
+        String path = File.separator + currentDate;
+        File file = new File(absolutePath + path);
+
+        // 디렉터리가 없으면 생성
+        if(!file.exists()){
+            boolean suc = file.mkdir();
+            if(!suc)
+                System.out.println("file processing fail");
+        }
+        // 파일 확장자 추출
+        String originalFileExtension;
+        String contentType = multipartFile.getContentType();
+
+        // 확장자명 없으면 처리 안함.
+        if (!ObjectUtils.isEmpty(contentType)){
+            // 확장자가 jpeg, png 만 지정.
+            if(contentType.contains("image/jpeg"))
+                originalFileExtension = ".jpg"; // 변경해준다.
+            else if(contentType.contains("image/png"))
+                originalFileExtension = ".png";
+            else
+                throw new Exception("Wrong File Type"); // 나머지는 처리 안함.
+        }
+        else{
+            throw new Exception("No File Type");
+        }
+        // 파일 이름은 나노초 + 확장자. -> 겹칠일이 전혀 없다!
+        String newFileName = System.nanoTime() + originalFileExtension;
+
+        // Photo 객체 생성.
+        Id_Photo Id_photo = new Id_Photo(
+                multipartFile.getOriginalFilename(),
+                path+File.separator+newFileName,
+                multipartFile.getSize(),
+                studentId
+        );
+
+        System.out.println(absolutePath + path + File.separator + newFileName);
+
+        // 업로드한 파일 데이터를 지정한 파일에 저장.
+        file = new File(absolutePath + path + File.separator + newFileName);
+        multipartFile.transferTo(file);
+        // 파일 권한 설정.
+        file.setReadable(true);
+        file.setWritable(true);
+
+        return Id_photo;
     }
 }

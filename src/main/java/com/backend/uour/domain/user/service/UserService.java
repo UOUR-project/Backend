@@ -11,4 +11,5 @@ public interface UserService {
     void deleteUser(String temp) throws Exception;
     void updateUser(UserUpdateDto updateDto, String temp) throws Exception;
     boolean blame(Long pointed_outId, String authorization, BLAME_CATEGORY blameCategory) throws Exception;
+    void promoteAdmin(Long pointedId, String authorization) throws Exception;
 }

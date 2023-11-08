@@ -5,6 +5,7 @@ import com.backend.uour.domain.user.dto.UserSignUpDto;
 import com.backend.uour.domain.user.dto.UserUpdateDto;
 import com.backend.uour.domain.user.entity.BLAME_CATEGORY;
 import com.backend.uour.domain.user.entity.Blame;
+import com.backend.uour.domain.user.entity.ROLE;
 import com.backend.uour.domain.user.entity.User;
 import com.backend.uour.domain.user.repository.BlameRepository;
 import com.backend.uour.domain.user.repository.UserRepository;
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService{
                 .build();
 
         user.passwordEncode(passwordEncoder); // 비밀번호 암호화
-        user.authtorizeAuthing(); // 인증되지 않은 권한으로 변경 -> 나중에 사람이 하나하나 검사하고 인증됨으로 바꿔줄거임.
+        user.authtorizeUnAuth(); // 인증되지 않은 권한으로 변경 -> 나중에 사람이 하나하나 검사하고 인증됨으로 바꿔줄거임.
         userRepository.save(user); // db에 저장
     }
 
@@ -148,6 +149,22 @@ public class UserServiceImpl implements UserService{
         }
         else{
             return false;
+        }
+    }
+
+    @Override
+    public void promoteAdmin(Long pointedId, String authorization) throws Exception {
+        User user = userRepository.findByEmail(jwtService.extractEmail(authorization)
+                        .orElseThrow(WrongJwtException::new))
+                .orElseThrow(NoUserException::new);
+        if(user.getRole().equals(ROLE.ADMIN)){
+//        if(user.getRole().equals(ROLE.AUTHING)){
+            User pointed = userRepository.findById(pointedId)
+                    .orElseThrow(NoUserException::new);
+            pointed.authtorizeAdmin();
+        }
+        else{
+            log.warn("관리자 권한이 없습니다.");
         }
     }
 }
