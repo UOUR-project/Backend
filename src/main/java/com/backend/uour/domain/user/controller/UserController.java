@@ -12,6 +12,7 @@ import com.backend.uour.global.network.STATUS;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +26,7 @@ public class UserController {
     private final JwtService jwtService;
 
     @PostMapping("/sign-up/addition")
+    @Secured("ROLE_UNAUTH")
     public ResponseEntity<?> AdditionSignUp(@RequestBody AdditionUserSignUpDto SignUpDto, HttpServletRequest req) throws Exception{
         try {
             String authorization = jwtService.extractAccessToken(req).orElseThrow(WrongJwtException::new);
@@ -78,6 +80,7 @@ public class UserController {
         }
     }
     @PostMapping("blame")
+    @Secured({"ROLE_AUTH","ROLE_ADMIN"})
     public ResponseEntity<?> blame(@RequestParam Long pointedID, @RequestParam BLAME_CATEGORY blameCategory, HttpServletRequest req){
         try {
             String authorization = jwtService.extractAccessToken(req)
@@ -91,6 +94,21 @@ public class UserController {
                 ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, "이미 신고한 대상");
                 return ResponseEntity.ok(resultDTO);
             }
+        }
+        catch (Exception e){
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);
+            return ResponseEntity.badRequest().body(resultDTO);
+        }
+    }
+    @PostMapping("Promote/Admin")
+    @Secured("ROLE_ADMIN")
+    public ResponseEntity<?> promoteAdmin(@RequestParam Long pointedID, HttpServletRequest req){
+        try {
+            String authorization = jwtService.extractAccessToken(req)
+                    .orElseThrow(WrongJwtException::new);
+            userService.promoteAdmin(pointedID,authorization);
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, "승급 완료");
+            return ResponseEntity.ok(resultDTO);
         }
         catch (Exception e){
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);

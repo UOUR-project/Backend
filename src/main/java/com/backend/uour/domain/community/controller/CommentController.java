@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -23,6 +24,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("comment/{boardId}")
+    @Secured({"ROLE_AUTH","ROLE_ADMIN"})
     public ResponseEntity<?> postComment(@PathVariable Long boardId, @RequestBody CommentPostDto commentDto , HttpServletRequest req){
         try{
             String accessToken = jwtService.extractAccessToken(req)
@@ -37,6 +39,7 @@ public class CommentController {
         }
     }
     @GetMapping("comment/{boardId}")
+    @Secured({"ROLE_AUTH","ROLE_ADMIN"})
     public ResponseEntity<?> getCommentList(@PathVariable Long boardId,@RequestParam int page){
         try{
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, commentService.getByBoardId(boardId, page));
@@ -48,6 +51,7 @@ public class CommentController {
         }
     }
     @DeleteMapping("comment/{boardId}")
+    @Secured({"ROLE_AUTH","ROLE_ADMIN"})
     public ResponseEntity<?> deleteComment(@PathVariable Long boardId,@RequestParam Long commentId, HttpServletRequest req){
         try{
             String accessToken = jwtService.extractAccessToken(req)
@@ -62,6 +66,7 @@ public class CommentController {
         }
     }
     @PostMapping("comment/{boardId}/like")
+    @Secured({"ROLE_AUTH","ROLE_ADMIN"})
     public ResponseEntity<?> likeComment(@PathVariable Long boardId,@RequestParam Long commentId, HttpServletRequest req){
         try{
             String accessToken = jwtService.extractAccessToken(req)

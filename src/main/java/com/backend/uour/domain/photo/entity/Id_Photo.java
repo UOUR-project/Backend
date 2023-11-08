@@ -1,38 +1,34 @@
-package com.backend.uour.domain.community.entity;
+package com.backend.uour.domain.photo.entity;
 
+import com.backend.uour.domain.user.entity.StudentId;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.minidev.json.annotate.JsonIgnore;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Photo {
+public class Id_Photo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @ManyToOne
-    private Board board;
 
     private String originalFileName;
     private String filePath;
     private Long fileSize;
 
+    @OneToOne(mappedBy = "Id_photo")
+    private StudentId studentId;
+
     @Builder
-    public Photo(String originalFileName, String filePath, Long fileSize){
+    public Id_Photo(String originalFileName, String filePath, Long fileSize, StudentId studentId){
         this.originalFileName = originalFileName;
         this.filePath = filePath;
         this.fileSize = fileSize;
+        this.studentId = studentId;
     }
 
-    public void setBoard(Board board){
-        this.board = board;
-        if(!board.getPhoto().contains(this))
-            board.getPhoto().add(this); // -> 중복 더하기 제한
-    }
 }

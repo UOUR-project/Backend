@@ -3,14 +3,10 @@ package com.backend.uour.domain.community.mapper;
 import com.backend.uour.domain.community.dto.*;
 import com.backend.uour.domain.community.entity.Board;
 
-import com.backend.uour.domain.community.entity.Comment;
-import com.backend.uour.domain.community.entity.Photo;
 import com.backend.uour.domain.community.repository.CommentRepository;
 import com.backend.uour.domain.community.repository.LikeBoardRepository;
-import com.backend.uour.domain.community.repository.PhotoRepository;
-import com.backend.uour.domain.community.service.PhotoHandler;
+import com.backend.uour.domain.photo.repository.PhotoRepository;
 import com.backend.uour.domain.user.entity.User;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

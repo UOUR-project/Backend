@@ -1,4 +1,4 @@
-package com.backend.uour.domain.community.dto;
+package com.backend.uour.domain.photo.dto;
 
 import lombok.Builder;
 import lombok.Getter;

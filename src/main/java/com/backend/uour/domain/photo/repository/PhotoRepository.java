@@ -1,6 +1,6 @@
-package com.backend.uour.domain.community.repository;
+package com.backend.uour.domain.photo.repository;
 
-import com.backend.uour.domain.community.entity.Photo;
+import com.backend.uour.domain.photo.entity.Photo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
