@@ -1,5 +1,5 @@
 server:
-  address: 127.0.0.1
+  address: localhost
   port: 8080
   servlet:
     context-path: /
@@ -30,9 +30,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/UOUR_DB?serverTimezone=Asia/Seoul
-    username: minseokey
-    password: dlalstjr1!
+#    url: jdbc:mysql://localhost:3306/UOUR_DB?serverTimezone=Asia/Seoul
+#    username: root
+#    password: dlalstjr1!
 
   jpa:
     hibernate:
