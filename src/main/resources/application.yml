@@ -1,5 +1,5 @@
 server:
-  address: localhost
+  address: 127.0.0.1
   port: 8080
   servlet:
     context-path: /
@@ -30,13 +30,13 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/UOUR_DB?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://127.0.0.1:3306/UOUR_DB?serverTimezone=Asia/Seoul
     username: minseokey
     password: dlalstjr1!
 
   jpa:
     hibernate:
-      ddl-auto: update  #create update none
+      ddl-auto: create  #create update none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
