@@ -28,6 +28,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import jakarta.servlet.DispatcherType;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.filter.CorsFilter;
 
 
@@ -58,6 +59,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(ar -> ar // 요청에 대한 인가 설정
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll() // forward 요청은 모두 허용 -> forward 요청은 서버 내부에서 다른 서블릿이나 JSP를 호출할 때 사용하는 방식이다.
 //                        .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll() // cors preflight 요청은 모두 허용
                         .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
