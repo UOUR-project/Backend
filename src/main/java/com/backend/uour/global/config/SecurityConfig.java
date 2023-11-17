@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -51,6 +52,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
+                .cors(Customizer.withDefaults())
                 .formLogin(AbstractHttpConfigurer::disable) // formLogin 사용하지 않음 -> 자체로그인
                 .httpBasic(AbstractHttpConfigurer::disable) // httpBasic 사용하지 않음 -> Bearer 방식 사용
                 .csrf(AbstractHttpConfigurer::disable) // csrf 사용하지 않음 -> jwt 토큰 사용
