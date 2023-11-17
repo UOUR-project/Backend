@@ -13,7 +13,7 @@ import java.util.List;
 public class CorsConfig {
 
     @Bean
-    public CorsFilter corsConfigurationSource() {
+    public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
@@ -21,6 +21,8 @@ public class CorsConfig {
         config.addAllowedOrigin("*");
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
+
+        config.addExposedHeader("Authorization");
 
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
