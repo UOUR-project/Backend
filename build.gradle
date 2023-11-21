@@ -31,7 +31,6 @@ dependencies {
 	implementation 'commons-io:commons-io:2.7'
 	implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.11'
 	//AWS
-
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -42,4 +41,10 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+jar{
+	manifest {
+		attributes 'Main-Class': 'com.backend.uour.UourApplication'
+	}
+	enabled = false
 }
