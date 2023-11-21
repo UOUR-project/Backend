@@ -58,12 +58,13 @@ public class SecurityConfig {
         http
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
                     @Override
+                    // cors 설정, localhost:3000 에서 오는 요청만 허용
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
-//                        config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                        config.setAllowedOrigins(Collections.singletonList("*"));
+                        config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                        config.setExposedHeaders(Collections.singletonList("*"));
                         config.setAllowedMethods(Collections.singletonList("*"));
-//                        config.setAllowCredentials(true);
+                        config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
                         config.setMaxAge(3600L); //1시간
                         return config;
