@@ -115,4 +115,61 @@ public class UserController {
             return ResponseEntity.badRequest().body(resultDTO);
         }
     }
+    @PostMapping("Promote/initialSelfPromoteAdmin")
+    public ResponseEntity<?> initialSelfPromoteAdmin(HttpServletRequest req){
+        try {
+            String authorization = jwtService.extractAccessToken(req)
+                    .orElseThrow(WrongJwtException::new);
+            userService.initialSelfPromoteAdmin(authorization);
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, "승급 완료");
+            return ResponseEntity.ok(resultDTO);
+        }
+        catch (Exception e){
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);
+            return ResponseEntity.badRequest().body(resultDTO);
+        }
+    }
+
+    @GetMapping("mypage")
+    @Secured({"ROLE_AUTH"})
+    public ResponseEntity<?> myPage(HttpServletRequest req){
+        try {
+            String authorization = jwtService.extractAccessToken(req)
+                    .orElseThrow(WrongJwtException::new);
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, userService.myPage(authorization));
+            return ResponseEntity.ok(resultDTO);
+        }
+        catch (Exception e){
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);
+            return ResponseEntity.badRequest().body(resultDTO);
+        }
+    }
+
+    @GetMapping("getRole")
+    @Secured({"ROLE_AUTH","ROLE_ADMIN","ROLE_UNAUTH","ROLE_AUTHING"})
+    public ResponseEntity<?> getRole(HttpServletRequest req){
+        try {
+            String authorization = jwtService.extractAccessToken(req)
+                    .orElseThrow(WrongJwtException::new);
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, userService.getRole(authorization));
+            return ResponseEntity.ok(resultDTO);
+        }
+        catch (Exception e){
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);
+            return ResponseEntity.badRequest().body(resultDTO);
+        }
+    }
+
+    @GetMapping("emailCheck")
+    // 로그인 이전에 들어오는 로직이므로 권한 없이 접근 가능
+    public ResponseEntity<?> IdCheck(@RequestParam String email){
+        try {
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, userService.emailCheck(email));
+            return ResponseEntity.ok(resultDTO);
+        }
+        catch (Exception e){
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);
+            return ResponseEntity.badRequest().body(resultDTO);
+        }
+    }
 }

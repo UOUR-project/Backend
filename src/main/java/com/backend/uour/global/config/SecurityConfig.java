@@ -55,20 +55,17 @@ public class SecurityConfig {
     // 필터를 만들어보자
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+        // cors 설정, localhost:3000 에서 오는 요청만 허용
         http
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    // cors 설정, localhost:3000 에서 오는 요청만 허용
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                        config.setExposedHeaders(Collections.singletonList("*"));
-                        config.setAllowedMethods(Collections.singletonList("*"));
-                        config.setAllowCredentials(true);
-                        config.setAllowedHeaders(Collections.singletonList("*"));
-                        config.setMaxAge(3600L); //1시간
-                        return config;
-                    }
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                    config.setExposedHeaders(Collections.singletonList("Authorization"));
+                    config.setAllowedMethods(Collections.singletonList("*"));
+                    config.setAllowCredentials(true);
+                    config.setAllowedHeaders(Collections.singletonList("*"));
+                    config.setMaxAge(3600L); //1시간
+                    return config;
                 }))
                 .formLogin(AbstractHttpConfigurer::disable) // formLogin 사용하지 않음 -> 자체로그인
                 .httpBasic(AbstractHttpConfigurer::disable) // httpBasic 사용하지 않음 -> Bearer 방식 사용

@@ -6,6 +6,13 @@ HELP.md
 images/
 logs/
 mysql/
+
+#application.yml
+#application-deploy.yml
+#application-local.yml
+#application-oauth.yml
+#application-jwt.yml
+
 ### STS ###
 .apt_generated
 .classpath
