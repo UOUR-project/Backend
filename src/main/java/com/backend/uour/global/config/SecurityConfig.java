@@ -81,6 +81,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/favicon.ico")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/sign-up")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/emailCheck")).permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(ol -> ol
                         .successHandler(oAuth2LoginSuccessHandler) // oauth2 로그인 성공시 후처리
