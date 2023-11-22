@@ -1,12 +1,14 @@
 package com.backend.uour.domain.user.service;
 
 import com.backend.uour.domain.user.dto.AdditionUserSignUpDto;
+import com.backend.uour.domain.user.dto.MypageDto;
 import com.backend.uour.domain.user.dto.UserSignUpDto;
 import com.backend.uour.domain.user.dto.UserUpdateDto;
 import com.backend.uour.domain.user.entity.BLAME_CATEGORY;
 import com.backend.uour.domain.user.entity.Blame;
 import com.backend.uour.domain.user.entity.ROLE;
 import com.backend.uour.domain.user.entity.User;
+import com.backend.uour.domain.user.mapper.UserMap;
 import com.backend.uour.domain.user.repository.BlameRepository;
 import com.backend.uour.domain.user.repository.UserRepository;
 import com.backend.uour.global.exception.NoUserException;
@@ -30,6 +32,7 @@ public class UserServiceImpl implements UserService{
     private final BlameRepository blameRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final UserMap userMap;
 
     // 회원가입
     @Override
@@ -165,6 +168,43 @@ public class UserServiceImpl implements UserService{
         }
         else{
             log.warn("관리자 권한이 없습니다.");
+        }
+    }
+
+    @Override
+    public MypageDto myPage(String authorization) throws Exception {
+        User user = userRepository.findByEmail(jwtService.extractEmail(authorization)
+                        .orElseThrow(WrongJwtException::new))
+                .orElseThrow(NoUserException::new);
+        return userMap.toMypageDto(user);
+    }
+
+    @Override
+    public ROLE getRole(String authorization) throws Exception {
+        User user = userRepository.findByEmail(jwtService.extractEmail(authorization)
+                        .orElseThrow(WrongJwtException::new))
+                .orElseThrow(NoUserException::new);
+        return user.getRole();
+    }
+
+    @Override
+    public boolean emailCheck(String email) throws Exception {
+        return userRepository.findByEmail(email).isEmpty();
+
+    }
+
+    @Override
+    // 비즈니스 로직.
+    // todo: 추후에 비밀코드 넣어서 사용.
+    public void initialSelfPromoteAdmin(String authorization) throws Exception {
+        User user = userRepository.findByEmail(jwtService.extractEmail(authorization)
+                        .orElseThrow(WrongJwtException::new))
+                .orElseThrow(NoUserException::new);
+        if(user.getRole().equals(ROLE.UNAUTH)){
+            user.authtorizeAdmin(); // 관리자로 변경
+        }
+        else{
+            log.warn("관리자가 될 수 없습니다.");
         }
     }
 }

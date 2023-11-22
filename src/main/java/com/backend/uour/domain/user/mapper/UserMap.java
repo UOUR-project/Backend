@@ -1,6 +1,7 @@
 package com.backend.uour.domain.user.mapper;
 
 import com.backend.uour.domain.community.dto.AuthorDto;
+import com.backend.uour.domain.user.dto.MypageDto;
 import com.backend.uour.domain.user.dto.StudentDto;
 import com.backend.uour.domain.user.dto.StudentIdListDto;
 import com.backend.uour.domain.user.entity.StudentId;
@@ -16,6 +17,15 @@ public class UserMap {
                 .id(studentId.getId())
                 .user(toStudentDto(studentId.getUser()))
                 .Id_photo(studentId.getId_photo().getId())
+                .build();
+    }
+
+    public MypageDto toMypageDto(User user){
+        return MypageDto.builder()
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .school(user.getSchool())
+                .major(user.getMajor())
                 .build();
     }
     // Author mapper
