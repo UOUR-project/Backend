@@ -44,4 +44,6 @@ out/
 ### VS Code ###
 .vscode/
 
+### OS ###
+.DS_Store
 
