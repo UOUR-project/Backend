@@ -1,4 +1,9 @@
+# 공통으로 사용된다.
 spring:
+  config:
+    activate:
+      on-profile: oauth
+
   security:
     oauth2:
       client:
