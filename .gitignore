@@ -7,11 +7,11 @@ images/
 logs/
 mysql/
 
-#application.yml
-#application-deploy.yml
-#application-local.yml
-#application-oauth.yml
-#application-jwt.yml
+application.yml
+application-deploy.yml
+application-local.yml
+application-oauth.yml
+application-jwt.yml
 
 ### STS ###
 .apt_generated
