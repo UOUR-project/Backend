@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Builder
 // 홈화면에서의 미니 게시판
 public class BoardListMicroDto {
+    private Long id;
     private String title;
     private int views;
     private int likes;

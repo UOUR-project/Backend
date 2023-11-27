@@ -13,5 +13,5 @@ import lombok.Builder;
 public class StudentIdListDto {
     private StudentDto user;
     private Long id;
-    private Long Id_photo;
+    private String Id_photo;
 }

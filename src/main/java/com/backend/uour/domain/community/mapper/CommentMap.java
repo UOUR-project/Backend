@@ -37,6 +37,7 @@ public class CommentMap {
     }
     public CommentListDto tolistDto(Comment comment){
         return CommentListDto.builder()
+                .id(comment.getId())
                 .author(toAuthorDto(comment.getAuthor()))
                 .content(comment.getContent())
                 .commentGroup(comment.getCommentGroup())

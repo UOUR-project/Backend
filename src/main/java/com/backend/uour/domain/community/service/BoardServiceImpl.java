@@ -8,6 +8,7 @@ import com.backend.uour.domain.photo.dto.PhotoResponseDto;
 import com.backend.uour.domain.photo.entity.Photo;
 import com.backend.uour.domain.photo.repository.PhotoRepository;
 import com.backend.uour.domain.photo.service.PhotoHandler;
+import com.backend.uour.domain.photo.service.LocalPhotoService;
 import com.backend.uour.domain.photo.service.PhotoService;
 import com.backend.uour.domain.user.entity.User;
 import com.backend.uour.domain.community.mapper.BoardMap;
@@ -46,7 +47,8 @@ public class BoardServiceImpl implements BoardService {
     private final ScrapRepository scrapRepository;
     private final PhotoHandler photoHandler;
     private final PhotoRepository photoRepository;
-    private final PhotoService photoService;
+//    private final PhotoService localPhotoService;
+    private final PhotoService S3PhotoService;
 
     @Override
     public void save(BoardPostDto board, List<MultipartFile> photos, String accessToken) throws Exception {
@@ -54,7 +56,7 @@ public class BoardServiceImpl implements BoardService {
                         .orElseThrow(WrongJwtException::new))
                 .orElseThrow(NoUserException::new);
         Board newboard = boardMap.ToEntity(board,author);
-        List<Photo> photoList = photoHandler.parseFileInfo(newboard,photos);
+        List<Photo> photoList = photoHandler.parseS3Info(newboard,photos);
         if (!photoList.isEmpty()){
             for(Photo photo : photoList){
                 newboard.addPhoto(photoRepository.save(photo));
@@ -88,8 +90,7 @@ public class BoardServiceImpl implements BoardService {
                 if(CollectionUtils.isEmpty(multipartList)) { // 전달되어온 파일 아예 x
                     // 원래 있던 파일 삭제
                     for(Photo dbPhoto : dbPhotoList)
-                        photoService.deletePhoto(dbPhoto); // 파일 삭제
-                    photoRepository.deleteAllByBoardId(boardId); // DB에서 사진 정보 삭제
+                        S3PhotoService.deletePhoto(dbPhoto); // 파일 삭제, DB에서 사진 정보 삭제
                 }
                 else {  // 전달되어온 파일 한 장 이상 존재 -> 원래도 사진이 있었고, 새로 들어오기도 함, 중복을 잡아야 한다.
 
@@ -99,13 +100,12 @@ public class BoardServiceImpl implements BoardService {
                     // DB의 파일 원본명 추출
                     for(Photo dbPhoto : dbPhotoList) {
                         // file id로 DB에 저장된 파일 정보 얻어오기
-                        PhotoDto dbPhotoDto = photoService.findByFileId(dbPhoto.getId());
+                        PhotoDto dbPhotoDto = S3PhotoService.findByFileId(dbPhoto.getId());
                         // DB의 파일 원본명 얻어오기
                         String dbOrigFileName = dbPhotoDto.getOrigFileName();
 
                         if(!multipartList.contains(dbOrigFileName)) {  // 서버에 저장된 파일들 중 전달되어온 파일이 존재하지 않는다면
-                            photoService.deletePhoto(dbPhoto);  // 파일 삭제
-                            photoRepository.delete(dbPhoto);   // DB에서 사진 정보 삭제
+                            S3PhotoService.deletePhoto(dbPhoto);  // 파일 삭제, // DB에서 사진 정보 삭제
                         }
                         else  // 그것도 아니라면
                             dbOriginNameList.add(dbOrigFileName);	// DB에 저장할 파일 목록에 추가
@@ -121,7 +121,7 @@ public class BoardServiceImpl implements BoardService {
                 }
             }
             System.out.println(addFileList);
-            List<Photo> newPhoto = photoHandler.parseFileInfo(oldboard,addFileList);
+            List<Photo> newPhoto = photoHandler.parseS3Info(oldboard,addFileList);
             if(!newPhoto.isEmpty()){
                 photoRepository.saveAll(newPhoto);
             }
@@ -138,7 +138,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow(NoPostingException::new);
         if (board.getAuthor().equals(author)) {
             for (Photo photo : board.getPhoto())
-                photoService.deletePhoto(photo); // 사진 자체 삭제
+                S3PhotoService.deletePhoto(photo); // 사진 자체 삭제
             photoRepository.deleteAllByBoardId(boardId); // DB에서 사진 정보 삭제
             boardRepository.delete(board);
         } else {
@@ -147,16 +147,19 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardDetailDto get(Long boardId) throws Exception{
+    public BoardDetailDto get(Long boardId, String accessToken) throws Exception{
         Board board = boardRepository.findById(boardId).orElseThrow(NoPostingException::new);
         board.addView();
         boardRepository.save(board);
-        List<PhotoResponseDto> prds = photoService.findAllByBoard(boardId);
+        User visitor = userRepository.findByEmail(jwtService.extractEmail(accessToken)
+                        .orElseThrow(WrongJwtException::new))
+                .orElseThrow(NoUserException::new);
+        List<PhotoResponseDto> prds = S3PhotoService.findAllByBoard(boardId);
         List<Long> photoId = new ArrayList<>();
         for (PhotoResponseDto prd: prds){
             photoId.add(prd.getFileId());
         }
-        return boardMap.ToDetailDto(board,photoId);
+        return boardMap.ToDetailDto(board,photoId,visitor);
     }
 
     @Override
