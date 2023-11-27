@@ -30,5 +30,9 @@ server:
       charset: UTF-8
       enabled: true
       force: true
-
+  ssl:
+    key-store:
+    key-store-password:
+    key-store-type:
+    key-alias:
 absolutePath: "/images"

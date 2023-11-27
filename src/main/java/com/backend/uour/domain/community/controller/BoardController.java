@@ -49,13 +49,11 @@ public class BoardController {
 
     @GetMapping("board/{boardId}")
     @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
-    public ResponseEntity<?> getBoardDetail(@PathVariable("boardId") Long boardId) {
+    public ResponseEntity<?> getBoardDetail(@PathVariable("boardId") Long boardId, HttpServletRequest req) {
         try {
-            BoardDetailDto board = boardService.get(boardId);
+            String accessToken = jwtService.extractAccessToken(req).orElseThrow(WrongJwtException::new);
+            BoardDetailDto board = boardService.get(boardId, accessToken);
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, board);
-            // todo: 조회하는사람과 저자가 같은사람인지 여부 리턴
-            // todo: 조회하는사람이 좋아요를 눌렀는지 여부 리턴
-            // todo: 조회하는사람이 스크랩을 눌렀는지 여부 리턴
             return ResponseEntity.ok(resultDTO);
         } catch (Exception e) {
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);

@@ -5,6 +5,7 @@ import com.backend.uour.domain.photo.entity.Id_Photo;
 import com.backend.uour.domain.photo.entity.Photo;
 import com.backend.uour.domain.user.entity.StudentId;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -18,11 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class PhotoHandler {
     // 프로젝트 디렉터리 내부의 저장을 위해 절대경로 지정.
     @Value("${absolutePath}")
     private String absolutePath;
+    private final S3Service s3Service;
+
     public List<Photo> parseFileInfo(Board board,List<MultipartFile> multipartFiles) throws Exception{
         List<Photo> filelist = new ArrayList<>(); // 일단 반환할 파일 리스트 먼저 생성.
 
@@ -144,4 +147,76 @@ public class PhotoHandler {
 
         return Id_photo;
     }
+    public List<Photo> parseS3Info(Board board,List<MultipartFile> multipartFiles) throws Exception {
+        List<Photo> filelist = new ArrayList<>(); // 일단 반환할 파일 리스트 먼저 생성.
+        if(!CollectionUtils.isEmpty(multipartFiles)){
+            for(MultipartFile multipartFile : multipartFiles){
+                // 파일 확장자 추출
+                String originalFileExtension;
+                String contentType = multipartFile.getContentType();
+
+                // 확장자명 없으면 처리 안함.
+                if (ObjectUtils.isEmpty(contentType)){
+                    break;
+                }
+                else{
+                    // 확장자가 jpeg, png 만 지정.
+                    if(contentType.contains("image/jpeg"))
+                        originalFileExtension = ".jpg"; // 변경해준다.
+                    else if(contentType.contains("image/png"))
+                        originalFileExtension = ".png";
+                    else
+                        break; // 나머지는 처리 안함.
+                }
+                // 파일 이름은 나노초 + 확장자. -> 겹칠일이 전혀 없다!
+                String newFileName = String.valueOf(System.nanoTime());
+                // S3에 업로드.
+                String photo_URL = s3Service.upload(multipartFile, newFileName);
+                // Photo 객체 생성.
+                Photo photo = new Photo(
+                        multipartFile.getOriginalFilename(),    // 파일 이름
+                        newFileName,                            // keyname(path)
+                        multipartFile.getSize()                // 파일 크기
+                );
+                if(board.getId() != null){
+                    photo.setBoard(board);
+                }
+                filelist.add(photo); // 생성후 리스트에 추가.
+
+            }
+        }
+        return filelist;
+    }
+    public Id_Photo parseS3StudentId(MultipartFile multipartFile, StudentId studentId) throws Exception{
+        // 파일 확장자 추출
+        String originalFileExtension;
+        String contentType = multipartFile.getContentType();
+
+        // 확장자명 없으면 처리 안함.
+        if (!ObjectUtils.isEmpty(contentType)){
+            // 확장자가 jpeg, png 만 지정.
+            if(contentType.contains("image/jpeg"))
+                originalFileExtension = ".jpg"; // 변경해준다.
+            else if(contentType.contains("image/png"))
+                originalFileExtension = ".png";
+            else
+                throw new Exception("Wrong File Type"); // 나머지는 처리 안함.
+        }
+        else{
+            throw new Exception("No File Type");
+        }
+        // 파일 이름은 나노초 + 확장자. -> 겹칠일이 전혀 없다!
+        String newFileName = String.valueOf(System.nanoTime());
+
+        s3Service.upload(multipartFile, newFileName);
+        // Photo 객체 생성.
+        Id_Photo Id_photo = new Id_Photo(
+                multipartFile.getOriginalFilename(),// 파일 이름
+                newFileName,            // keyname(path)
+                multipartFile.getSize(),// 파일 크기
+                studentId       // studentId
+        );
+        return Id_photo;
+    }
+
 }

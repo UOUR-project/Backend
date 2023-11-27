@@ -15,7 +15,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create  #create update none
+      ddl-auto: update  #create update none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
@@ -29,5 +29,24 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+
+# aws 설정
+cloud:
+  aws:
+    credentials:
+      accessKey: "AKIAVZ5PD4KLTXB2U375"
+      secretKey: "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"
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    s3:
+      bucket: uour-bucket
+
+#  ssl:
+#    key-store:
+#    key-store-password:
+#    key-store-type:
+#    key-alias:
 
 absolutePath: "/images"

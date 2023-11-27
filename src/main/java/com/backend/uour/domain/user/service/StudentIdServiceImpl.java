@@ -40,7 +40,7 @@ public class StudentIdServiceImpl implements StudentIdService{
                         .orElseThrow(WrongJwtException::new))
                 .orElseThrow(NoUserException::new);
         StudentId studentId = new StudentId(user);
-        Id_Photo savedPhoto = photoHandler.parseFileInfoStudentId(photo, studentId);
+        Id_Photo savedPhoto = photoHandler.parseS3StudentId(photo, studentId);
         studentId.setId_Photo(savedPhoto);
         try {
             Id_photoRepository.save(savedPhoto);
@@ -53,9 +53,7 @@ public class StudentIdServiceImpl implements StudentIdService{
 
     @Override
     public Slice<StudentIdListDto> getStudentIdList(int page) throws Exception{
-        System.out.println(page);
         Page<StudentId> studentIdList = studentIdRepository.findAll(PageRequest.of(page,10));
-        System.out.println(studentIdList);
         return studentIdList.map(userMap::toStudentIdListDto);
     }
 
