@@ -4,5 +4,3 @@ spring:
       # active properties
       "local" : "local, jwt, oauth"
       "deploy" : "deploy, jwt, oauth"
-
-

@@ -13,15 +13,19 @@ import java.util.List;
 @Builder
 // 게시글 디테일 DTO
 public class BoardDetailDto {
+    private Long id;
     private String title;
     private String content;
     private int views;
     private int likes;
     private AuthorDto author;
     private int commentsCount;
-    private List<Long> photoId;
+    private List<String> photoId;
     private List<CommentListDto> comments;
     private LocalDateTime updatedTime;
     private LocalDateTime writedTime;
     private CATEGORY category;
+    private boolean imAuthor;
+    private boolean imLiked;
+    private boolean imScrapped;
 }

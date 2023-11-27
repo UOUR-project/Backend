@@ -2,9 +2,9 @@ package com.backend.uour.domain.photo.controller;
 
 import com.backend.uour.domain.photo.dto.Id_PhotoDto;
 import com.backend.uour.domain.photo.dto.PhotoDto;
+import com.backend.uour.domain.photo.service.LocalPhotoService;
 import com.backend.uour.domain.photo.service.PhotoService;
-import com.backend.uour.global.network.ResultDTO;
-import com.backend.uour.global.network.STATUS;
+import com.backend.uour.domain.photo.service.S3PhotoService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +20,7 @@ import java.io.InputStream;
 @RequiredArgsConstructor
 @RestController
 public class PhotoController {
+//    private final PhotoService localPhotoService;
     private final PhotoService photoService;
     @Value("${absolutePath}")
     private String absolutePath;
