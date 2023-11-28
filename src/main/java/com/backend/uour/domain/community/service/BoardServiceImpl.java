@@ -220,7 +220,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void like(Long boardId, String authorization) throws Exception{
+    public boolean like(Long boardId, String authorization) throws Exception{
         User user = userRepository.findByEmail(jwtService.extractEmail(authorization)
                         .orElseThrow(WrongJwtException::new))
                 .orElseThrow(NoUserException::new);
@@ -233,13 +233,15 @@ public class BoardServiceImpl implements BoardService {
                     .build();
             likeBoardRepository.save(likeBoard);
             user.addLikeBoard(likeBoard);
+            return true; // 만들어졌다.
         }
         else{
             likeBoardRepository.delete(temp.get());
+            return false; // 삭제됬다.
         }
     }
     @Override
-    public void scrap(Long boardId, String authorization) throws Exception{
+    public boolean scrap(Long boardId, String authorization) throws Exception{
         User user = userRepository.findByEmail(jwtService.extractEmail(authorization)
                         .orElseThrow(WrongJwtException::new))
                 .orElseThrow(NoUserException::new);
@@ -252,9 +254,11 @@ public class BoardServiceImpl implements BoardService {
                     .build();
             scrapRepository.save(scrap);
             user.addScrapBoard(scrap);
+            return true; // 만들어졌다.
         }
         else{
             scrapRepository.delete(temp.get());
+            return false; // 삭제됬다.
         }
     }
 }

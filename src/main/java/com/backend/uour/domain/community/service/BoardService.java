@@ -30,7 +30,7 @@ public interface BoardService {
 
     Slice<BoardListMicroMicroDto> getByPopularMicroMicro(int page);
 
-    void like(Long boardId, String authorization) throws Exception;
+    boolean like(Long boardId, String authorization) throws Exception;
 
-    void scrap(Long boardId, String authorization) throws Exception;
+    boolean scrap(Long boardId, String authorization) throws Exception;
 }

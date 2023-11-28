@@ -39,14 +39,13 @@ public class CommentServiceImpl implements CommentService{
     private final LikeCommentRepository likeCommentRepository;
     private final BoardRepository boardRepository;
     @Override
-    public void save(Long boardId, CommentPostDto commentDto, String accessToken) throws Exception{
+    public void save(Long boardId, Long CommentGroup, CommentPostDto commentDto, String accessToken) throws Exception{
         User author = userRepository.findByEmail(jwtService.extractEmail(accessToken)
                         .orElseThrow(WrongJwtException::new))
                 .orElseThrow(NoUserException::new);
-        Comment newcomment = commentMap.toEntity(commentDto,author,boardId);
+        Comment newcomment = commentMap.toEntity(commentDto,CommentGroup,author,boardId);
         if(newcomment.getCommentGroup() != -1){
-            if(commentRepository.findById(newcomment.getCommentGroup())
-                    .orElseThrow(NoCommentException::new).getCommentGroup() == -1) {
+            if(commentRepository.findById(newcomment.getCommentGroup()).orElseThrow(NoCommentException::new).getCommentGroup() == -1) {
                 //대댓글 저장
                 commentRepository.save(newcomment);
                 boardRepository.findById(boardId).get().addComment(newcomment);
@@ -91,7 +90,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public void like(Long boardId, Long commentId, String accessToken) throws Exception{
+    public boolean like(Long boardId, Long commentId, String accessToken) throws Exception{
         User user = userRepository.findByEmail(jwtService.extractEmail(accessToken)
                         .orElseThrow(WrongJwtException::new))
                 .orElseThrow(NoUserException::new);
@@ -102,9 +101,11 @@ public class CommentServiceImpl implements CommentService{
                     .user(user)
                     .build();
             likeCommentRepository.save(likeComment);
+            return true; // 만들어졌다.
         }
         else{
             likeCommentRepository.delete(temp.get());
+            return false; // 삭제됐다.
         }
     }
 }
