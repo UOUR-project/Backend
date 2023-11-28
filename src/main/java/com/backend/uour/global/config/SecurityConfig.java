@@ -82,6 +82,12 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/favicon.ico")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/sign-up")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/emailCheck")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/board/")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/board/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/category")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/comment")).permitAll()
+
+
                         .anyRequest().authenticated())
                 .oauth2Login(ol -> ol
                         .successHandler(oAuth2LoginSuccessHandler) // oauth2 로그인 성공시 후처리

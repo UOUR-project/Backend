@@ -26,10 +26,10 @@ public class CommentMap {
                 .build();
     }
 
-    public Comment toEntity(CommentPostDto commentPostDto,User author,Long boardId) throws Exception{
+    public Comment toEntity(CommentPostDto commentPostDto, Long CommentGroup,User author,Long boardId) throws Exception{
         return Comment.builder()
                 .author(author)
-                .commentGroup(commentPostDto.getCommentGroup())
+                .commentGroup(CommentGroup)
                 .board(boardRepository.findById(boardId)
                         .orElseThrow(NoPostingException::new))
                 .content(commentPostDto.getContent())

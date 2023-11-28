@@ -25,11 +25,14 @@ public class CommentController {
 
     @PostMapping("comment/{boardId}")
     @Secured({"ROLE_AUTH","ROLE_ADMIN"})
-    public ResponseEntity<?> postComment(@PathVariable Long boardId, @RequestBody CommentPostDto commentDto , HttpServletRequest req){
+    //commentGroup -> 만약 대댓글이면 댓글의 id, 아니면 없다.
+    public ResponseEntity<?> postComment(@PathVariable Long boardId,@RequestParam(required = false) Long commentGroup, @RequestBody CommentPostDto commentDto , HttpServletRequest req){
         try{
             String accessToken = jwtService.extractAccessToken(req)
                     .orElseThrow(WrongJwtException::new);
-            commentService.save(boardId,commentDto,accessToken);
+            if (commentGroup == null)
+                commentGroup = -1L;
+            commentService.save(boardId,commentGroup,commentDto,accessToken); // commentGroup -> 만약 대댓글이면 댓글의 id, 아니면 -1
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK,null);
             return ResponseEntity.ok().body(resultDTO);
         }
@@ -52,6 +55,7 @@ public class CommentController {
     }
     @DeleteMapping("comment/{boardId}")
     @Secured({"ROLE_AUTH","ROLE_ADMIN"})
+    //commentId -> 삭제할 댓글의 id
     public ResponseEntity<?> deleteComment(@PathVariable Long boardId,@RequestParam Long commentId, HttpServletRequest req){
         try{
             String accessToken = jwtService.extractAccessToken(req)
@@ -67,12 +71,13 @@ public class CommentController {
     }
     @PostMapping("comment/{boardId}/like")
     @Secured({"ROLE_AUTH","ROLE_ADMIN"})
+    //commentId -> 좋아요를 누를 댓글의 id
     public ResponseEntity<?> likeComment(@PathVariable Long boardId,@RequestParam Long commentId, HttpServletRequest req){
         try{
             String accessToken = jwtService.extractAccessToken(req)
                     .orElseThrow(WrongJwtException::new);
-            commentService.like(boardId,commentId,accessToken);
-            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK,null);
+            boolean isLike = commentService.like(boardId,commentId,accessToken);
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK,isLike);
             return ResponseEntity.ok(resultDTO);
         }
         catch (Exception e){
