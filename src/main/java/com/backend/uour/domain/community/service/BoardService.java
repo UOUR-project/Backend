@@ -14,7 +14,7 @@ public interface BoardService {
 
     void delete(Long boardId, String accessToken) throws Exception;
 
-    BoardDetailDto get(Long boardId) throws Exception;
+    BoardDetailDto get(Long boardId, String accessToken) throws Exception;
     Slice<BoardListDto> getByCategory(CATEGORY category, int page); // 카테고리별 정리
     Slice<BoardListDto> getBySearch(String search, int page); // 검색어별 정리
 
@@ -30,7 +30,7 @@ public interface BoardService {
 
     Slice<BoardListMicroMicroDto> getByPopularMicroMicro(int page);
 
-    void like(Long boardId, String authorization) throws Exception;
+    boolean like(Long boardId, String authorization) throws Exception;
 
-    void scrap(Long boardId, String authorization) throws Exception;
+    boolean scrap(Long boardId, String authorization) throws Exception;
 }

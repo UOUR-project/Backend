@@ -48,14 +48,11 @@ public class BoardController {
     }
 
     @GetMapping("board/{boardId}")
-    @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
-    public ResponseEntity<?> getBoardDetail(@PathVariable("boardId") Long boardId) {
+    public ResponseEntity<?> getBoardDetail(@PathVariable("boardId") Long boardId, HttpServletRequest req) {
         try {
-            BoardDetailDto board = boardService.get(boardId);
+            String accessToken = jwtService.extractAccessToken(req).orElseThrow(WrongJwtException::new);
+            BoardDetailDto board = boardService.get(boardId, accessToken);
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, board);
-            // todo: 조회하는사람과 저자가 같은사람인지 여부 리턴
-            // todo: 조회하는사람이 좋아요를 눌렀는지 여부 리턴
-            // todo: 조회하는사람이 스크랩을 눌렀는지 여부 리턴
             return ResponseEntity.ok(resultDTO);
         } catch (Exception e) {
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);
@@ -129,6 +126,7 @@ public class BoardController {
 
     @GetMapping("board/like")
     @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
+    // 일반 사용자 불가능
     public ResponseEntity<?> getBoardListByLike(HttpServletRequest req, @RequestParam int page) {
         try {
             String accessToken = jwtService.extractAccessToken(req)
@@ -143,6 +141,7 @@ public class BoardController {
 
     @GetMapping("board/scrap")
     @Secured({"ROLE_AUTH", "ROLE_ADMIN"})
+    // 일반사용자 불가능
     public ResponseEntity<?> getBoardListByScrap(HttpServletRequest req, @RequestParam int page) {
         try {
             String accessToken = jwtService.extractAccessToken(req)
@@ -186,9 +185,8 @@ public class BoardController {
         try {
             String accessToken = jwtService.extractAccessToken(req)
                     .orElseThrow(WrongJwtException::new);
-            boardService.like(boardId,accessToken);
-            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK,null);
-            // todo: 눌러서 좋아요 되면 like 리턴, 안되면 unlike 리턴
+            boolean isLike = boardService.like(boardId,accessToken);
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK,isLike);
             return ResponseEntity.ok(resultDTO);
         }
         catch (Exception e){
@@ -203,8 +201,8 @@ public class BoardController {
         try {
             String accessToken = jwtService.extractAccessToken(req)
                     .orElseThrow(WrongJwtException::new);
-            boardService.scrap(boardId, accessToken);
-            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, null);
+            boolean isScrap = boardService.scrap(boardId, accessToken);
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, isScrap);
             return ResponseEntity.ok(resultDTO);
         } catch (Exception e) {
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);

@@ -10,5 +10,6 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class BoardListMicroMicroDto {
+    private Long id;
     private String title;
 }

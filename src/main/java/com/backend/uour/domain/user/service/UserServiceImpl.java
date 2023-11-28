@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService{
                     user.setSchool(updateDto.getSchool());
                     user.setMajor(updateDto.getMajor());
                     user.setStudentId(updateDto.getStudentId());
-                    user.setPassword(updateDto.getNewPassword());
+                    user.setPassword(passwordEncoder.encode(updateDto.getNewPassword()));
                     System.out.println("로컬 진행");
                 }
                 else{
@@ -200,12 +200,7 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findByEmail(jwtService.extractEmail(authorization)
                         .orElseThrow(WrongJwtException::new))
                 .orElseThrow(NoUserException::new);
-        if(user.getRole().equals(ROLE.UNAUTH)){
-            user.authtorizeAdmin(); // 관리자로 변경
-        }
-        else{
-            log.warn("관리자가 될 수 없습니다.");
-        }
+        user.authtorizeAdmin(); // 관리자로 변경
     }
 }
 
