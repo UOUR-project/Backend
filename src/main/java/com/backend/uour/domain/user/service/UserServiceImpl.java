@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService{
                     user.setSchool(updateDto.getSchool());
                     user.setMajor(updateDto.getMajor());
                     user.setStudentId(updateDto.getStudentId());
-                    user.setPassword(updateDto.getNewPassword());
+                    user.setPassword(passwordEncoder.encode(updateDto.getNewPassword()));
                     System.out.println("로컬 진행");
                 }
                 else{

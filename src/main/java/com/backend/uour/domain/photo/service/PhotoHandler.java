@@ -171,7 +171,8 @@ public class PhotoHandler {
                 // 파일 이름은 나노초 + 확장자. -> 겹칠일이 전혀 없다!
                 String newFileName = String.valueOf(System.nanoTime());
                 // S3에 업로드.
-                String photo_URL = s3Service.upload(multipartFile, newFileName);
+                s3Service.upload(multipartFile, newFileName);
+                System.out.println(newFileName);
                 // Photo 객체 생성.
                 Photo photo = new Photo(
                         multipartFile.getOriginalFilename(),    // 파일 이름
@@ -207,7 +208,7 @@ public class PhotoHandler {
         }
         // 파일 이름은 나노초 + 확장자. -> 겹칠일이 전혀 없다!
         String newFileName = String.valueOf(System.nanoTime());
-
+        System.out.println(newFileName);
         s3Service.upload(multipartFile, newFileName);
         // Photo 객체 생성.
         Id_Photo Id_photo = new Id_Photo(
