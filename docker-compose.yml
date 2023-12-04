@@ -3,7 +3,7 @@ version:
 
 services:
   application:
-    build: .
+    image : minseokey/uout_test
     container_name: application
     restart: always
     ports:
