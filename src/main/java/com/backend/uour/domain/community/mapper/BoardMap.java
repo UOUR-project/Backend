@@ -38,6 +38,7 @@ public class BoardMap {
     public AuthorDto toAuthorDto(User author){
         return AuthorDto.builder()
                 .nickname(author.getNickname())
+                .school(author.getSchool())
                 .id(author.getId())
                 .build();
     }
@@ -45,23 +46,44 @@ public class BoardMap {
     // detail mapper
     public BoardDetailDto ToDetailDto(Board board, List<Long> photoId, User visitor){
         List<String> PhotoList = photoId.stream().map(id -> photoRepository.findById(id).get().getFilePath()).toList();
-        return BoardDetailDto.builder()
-                .id(board.getId())
-                .title(board.getTitle())
-                .content(board.getContent())
-                .author(toAuthorDto(board.getAuthor()))
-                .category(board.getCategory())
-                .updatedTime(board.getUpdateTime())
-                .writedTime(board.getWriteTime())
-                .photoId(PhotoList)
-                .comments(commentRepository.findByBoardId(board.getId()).stream().map(commentMap::tolistDto).collect(Collectors.toList()))
-                .views(board.getView())
-                .commentsCount(commentRepository.countByBoardId(board.getId()))
-                .likes(likeBoardRepository.countByBoardId(board.getId()))
-                .imAuthor(board.getAuthor().getId().equals(visitor.getId()))
-                .imLiked(likeBoardRepository.findByBoardIdAndUser(board.getId(), visitor).isPresent())
-                .imScrapped(scrapRepository.findByBoardIdAndUser(board.getId(), visitor).isPresent())
-                .build();
+        if (visitor == null){
+            return BoardDetailDto.builder()
+                    .id(board.getId())
+                    .title(board.getTitle())
+                    .content(board.getContent())
+                    .author(toAuthorDto(board.getAuthor()))
+                    .category(board.getCategory())
+                    .updatedTime(board.getUpdateTime())
+                    .writedTime(board.getWriteTime())
+                    .photoId(PhotoList)
+                    .comments(commentRepository.findByBoardId(board.getId()).stream().map(commentMap::tolistDto).collect(Collectors.toList()))
+                    .views(board.getView())
+                    .commentsCount(commentRepository.countByBoardId(board.getId()))
+                    .likes(likeBoardRepository.countByBoardId(board.getId()))
+                    .imAuthor(false)
+                    .imLiked(false)
+                    .imScrapped(false)
+                    .build();
+        }
+        else {
+            return BoardDetailDto.builder()
+                    .id(board.getId())
+                    .title(board.getTitle())
+                    .content(board.getContent())
+                    .author(toAuthorDto(board.getAuthor()))
+                    .category(board.getCategory())
+                    .updatedTime(board.getUpdateTime())
+                    .writedTime(board.getWriteTime())
+                    .photoId(PhotoList)
+                    .comments(commentRepository.findByBoardId(board.getId()).stream().map(commentMap::tolistDto).collect(Collectors.toList()))
+                    .views(board.getView())
+                    .commentsCount(commentRepository.countByBoardId(board.getId()))
+                    .likes(likeBoardRepository.countByBoardId(board.getId()))
+                    .imAuthor(board.getAuthor().getId().equals(visitor.getId()))
+                    .imLiked(likeBoardRepository.findByBoardIdAndUser(board.getId(), visitor).isPresent())
+                    .imScrapped(scrapRepository.findByBoardIdAndUser(board.getId(), visitor).isPresent())
+                    .build();
+        }
     }
 
     public BoardListDto toListDto(Board board){

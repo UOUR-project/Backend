@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -82,10 +83,9 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/favicon.ico")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/sign-up")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/emailCheck")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/board/")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/board/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/category")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/comment")).permitAll()
+                        .requestMatchers(HttpMethod.GET,"/board/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/category/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/comment/**").permitAll()
 
 
                         .anyRequest().authenticated())
