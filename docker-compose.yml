@@ -3,11 +3,11 @@ version:
 
 services:
   application:
-    image : minseokey/uour_test:ver0.7
+    image : minseokey/uour:deploy
     container_name: application
     restart: always
     ports:
-      - "8080:8080"
+      - "443:443"
     volumes:
       - ./logs:/logs
       - ./images:/images
