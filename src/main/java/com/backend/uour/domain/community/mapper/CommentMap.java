@@ -22,6 +22,7 @@ public class CommentMap {
     public AuthorDto toAuthorDto(User author){
         return AuthorDto.builder()
                 .nickname(author.getNickname())
+                .school(author.getSchool())
                 .id(author.getId())
                 .build();
     }
