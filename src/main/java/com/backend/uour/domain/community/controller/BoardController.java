@@ -26,7 +26,6 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-// todo: 권한에 맞게 튕겨내줘야함. @Secured 활용.
 //@RequestMapping(value = "/v1/board")
 public class BoardController {
     private final BoardService boardService;
@@ -50,8 +49,13 @@ public class BoardController {
     @GetMapping("board/{boardId}")
     public ResponseEntity<?> getBoardDetail(@PathVariable("boardId") Long boardId, HttpServletRequest req) {
         try {
-            String accessToken = jwtService.extractAccessToken(req).orElseThrow(WrongJwtException::new);
-            BoardDetailDto board = boardService.get(boardId, accessToken);
+            BoardDetailDto board;
+            if(jwtService.extractAccessToken(req).isEmpty())
+                board = boardService.get(boardId, null);
+            else {
+                String accessToken = jwtService.extractAccessToken(req).orElseThrow(WrongJwtException::new);
+                board = boardService.get(boardId, accessToken);
+            }
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, board);
             return ResponseEntity.ok(resultDTO);
         } catch (Exception e) {

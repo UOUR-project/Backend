@@ -151,9 +151,15 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow(NoPostingException::new);
         board.addView();
         boardRepository.save(board);
-        User visitor = userRepository.findByEmail(jwtService.extractEmail(accessToken)
-                        .orElseThrow(WrongJwtException::new))
-                .orElseThrow(NoUserException::new);
+        User visitor;
+        if (accessToken != null){
+            visitor = userRepository.findByEmail(jwtService.extractEmail(accessToken)
+                            .orElseThrow(WrongJwtException::new))
+                    .orElseThrow(NoUserException::new);
+        }
+        else{
+            visitor = null;
+        }
         List<PhotoResponseDto> prds = S3PhotoService.findAllByBoard(boardId);
         List<Long> photoId = new ArrayList<>();
         for (PhotoResponseDto prd: prds){
