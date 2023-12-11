@@ -8,6 +8,7 @@ import com.backend.uour.domain.community.entity.Comment;
 import com.backend.uour.domain.community.repository.BoardRepository;
 import com.backend.uour.domain.community.repository.LikeCommentRepository;
 import com.backend.uour.domain.user.entity.User;
+import com.backend.uour.domain.user.repository.UserRepository;
 import com.backend.uour.global.exception.NoPostingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class CommentMap {
 
     private final BoardRepository boardRepository;
     private final LikeCommentRepository likeCommentRepository;
+    private final UserRepository userRepository;
 
     public AuthorDto toAuthorDto(User author){
         return AuthorDto.builder()
@@ -36,15 +38,29 @@ public class CommentMap {
                 .content(commentPostDto.getContent())
                 .build();
     }
-    public CommentListDto tolistDto(Comment comment){
-        return CommentListDto.builder()
-                .id(comment.getId())
-                .author(toAuthorDto(comment.getAuthor()))
-                .content(comment.getContent())
-                .commentGroup(comment.getCommentGroup())
-                .WriteTime(comment.getWriteTime())
-                .updateTime(comment.getUpdateTime())
-                .likes(likeCommentRepository.countByCommentId(comment.getId()))
-                .build();
+    public CommentListDto tolistDto(Comment comment, User user) {
+        if (user == null) {
+            return CommentListDto.builder()
+                    .id(comment.getId())
+                    .author(toAuthorDto(comment.getAuthor()))
+                    .content(comment.getContent())
+                    .commentGroup(comment.getCommentGroup())
+                    .WriteTime(comment.getWriteTime())
+                    .updateTime(comment.getUpdateTime())
+                    .likes(likeCommentRepository.countByCommentId(comment.getId()))
+                    .isMine(false)
+                    .build();
+        } else {
+            return CommentListDto.builder()
+                    .id(comment.getId())
+                    .author(toAuthorDto(comment.getAuthor()))
+                    .content(comment.getContent())
+                    .commentGroup(comment.getCommentGroup())
+                    .WriteTime(comment.getWriteTime())
+                    .updateTime(comment.getUpdateTime())
+                    .likes(likeCommentRepository.countByCommentId(comment.getId()))
+                    .isMine(comment.getAuthor().getId().equals(user.getId()))
+                    .build();
+        }
     }
 }

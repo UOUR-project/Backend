@@ -16,6 +16,7 @@ public class CommentListDto {
     private LocalDateTime WriteTime;
     private LocalDateTime updateTime;
     private AuthorDto author;
+    private boolean isMine;
     private boolean isReply;
     private Long commentGroup;
     private int likes;

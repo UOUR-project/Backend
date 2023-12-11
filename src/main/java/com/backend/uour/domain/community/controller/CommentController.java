@@ -43,9 +43,11 @@ public class CommentController {
     }
     @GetMapping("comment/{boardId}")
     @Secured({"ROLE_AUTH","ROLE_ADMIN"})
-    public ResponseEntity<?> getCommentList(@PathVariable Long boardId,@RequestParam int page){
+    public ResponseEntity<?> getCommentList(@PathVariable Long boardId,@RequestParam int page, HttpServletRequest req){
         try{
-            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, commentService.getByBoardId(boardId, page));
+            String accessToken = jwtService.extractAccessToken(req)
+                    .orElseThrow(WrongJwtException::new);
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, commentService.getByBoardId(boardId, page, accessToken));
             return ResponseEntity.ok(resultDTO);
         }
         catch (Exception e){

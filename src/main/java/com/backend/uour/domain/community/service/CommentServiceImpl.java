@@ -84,9 +84,12 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public Slice<CommentListDto> getByBoardId(Long boardId, int page) {
+    public Slice<CommentListDto> getByBoardId(Long boardId, int page, String accessToken) throws Exception{
         Slice<Comment> comments = commentRepository.findByBoardId(boardId, PageRequest.of(page,7));
-        return comments.map(commentMap::tolistDto);
+        User visitor = userRepository.findByEmail(jwtService.extractEmail(accessToken)
+                        .orElseThrow(WrongJwtException::new))
+                .orElseThrow(NoUserException::new);
+        return comments.map(comment -> commentMap.tolistDto(comment, visitor));
     }
 
     @Override
