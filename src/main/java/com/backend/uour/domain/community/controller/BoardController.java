@@ -106,9 +106,11 @@ public class BoardController {
 
     @GetMapping("board/user")
     // 일반 사용자도 보기는 가능.
-    public ResponseEntity<?> getBoardListByUser(@RequestParam Long user, @RequestParam int page) {
+    public ResponseEntity<?> getBoardListByUser(HttpServletRequest req, @RequestParam int page) {
         try {
-            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, boardService.getByUser(user, page));
+            String accessToken = jwtService.extractAccessToken(req)
+                    .orElseThrow(WrongJwtException::new);
+            ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.OK, boardService.getByUser(accessToken, page));
             return ResponseEntity.ok(resultDTO);
         } catch (Exception e) {
             ResultDTO<Object> resultDTO = ResultDTO.of(STATUS.BAD_REQUEST, null);

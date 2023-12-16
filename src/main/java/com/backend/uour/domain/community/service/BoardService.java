@@ -21,7 +21,7 @@ public interface BoardService {
 
     Slice<BoardListDto> getByCategoryAndSearch(CATEGORY category, String search, int page);
 
-    Slice<BoardListDto> getByUser(Long userid, int page); // 유저별 정리
+    Slice<BoardListDto> getByUser(String accessToken, int page) throws Exception; // 유저별 정리
 
     // Entity find
     Slice<BoardListDto> getByLike(String accessToken, int page) throws Exception;

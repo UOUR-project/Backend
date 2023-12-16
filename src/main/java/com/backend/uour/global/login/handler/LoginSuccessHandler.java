@@ -35,7 +35,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         // refresh 토큰을 DB에 저장
         userRepository.findByEmail(email)
                 .ifPresent(user -> {
-                    user.updateRefreshToken(refresh);
+                    user.updateRefreshToken("BEARER " + refresh);
                     userRepository.saveAndFlush(user);
                 });
         log.info("로그인에 성공하였습니다. 이메일 : {}", email);

@@ -17,15 +17,17 @@ import java.util.Optional;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
     Slice<Board> findByCategory(CATEGORY category, Pageable pageable);
-    Slice<Board> findByAuthorId(Long userId,Pageable pageable);
+    Slice<Board> findByAuthor(User user,Pageable pageable);
     Slice<Board> findByTitleContaining(String search,Pageable pageable);
     Slice<Board> findByCategoryAndTitleContaining(CATEGORY category,String search,Pageable pageable);
     // todo: 본문 검색, 제목 + 본문 검색!
 
-    @Query("SELECT b FROM Board b JOIN LikeBoard lb Where lb.user =: user")
-    Slice<Board> findByLikedUserId(User user, Pageable pageable);
+    @Query("SELECT b FROM Board b JOIN LikeBoard lb ON b = lb.board WHERE lb.user = :user")
+    Slice<Board> findByLikedUser(User user, Pageable pageable);
 
-    @Query("SELECT b FROM Board b JOIN Scrap s Where s.user =: user")
-    Slice<Board> findByScrapedUserId(User user, Pageable pageable);
+
+    @Query("SELECT b FROM Board b JOIN Scrap s ON b = s.board WHERE s.user = :user")
+    Slice<Board> findByScrapedUser(User user, Pageable pageable);
+
     Slice<Board> findByWriteTimeBetween (LocalDateTime start, LocalDateTime end, Pageable pageable);
 }

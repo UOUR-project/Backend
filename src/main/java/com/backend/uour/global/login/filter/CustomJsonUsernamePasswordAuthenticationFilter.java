@@ -41,7 +41,7 @@ public class CustomJsonUsernamePasswordAuthenticationFilter extends AbstractAuth
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
         // json만 사용
-        if (request.getContentType()== null|| !request.getContentType().equals(CONTENT_TYPE)) {
+        if (request.getContentType()== null || !request.getContentType().equals(CONTENT_TYPE)) {
             throw new AuthenticationServiceException("Content type must be application/json");
         }
         // json 데이터를 객체로 변환

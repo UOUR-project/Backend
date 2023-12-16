@@ -184,9 +184,13 @@ public class BoardServiceImpl implements BoardService {
         Slice<Board> boards = boardRepository.findByCategoryAndTitleContaining(category,search,PageRequest.of(page,10));
         return boards.map(boardMap::toListDto);
     }
+
     @Override
-    public Slice<BoardListDto> getByUser(Long userId,int page) {
-        Slice<Board> boards = boardRepository.findByAuthorId(userId,PageRequest.of(page,10));
+    public Slice<BoardListDto> getByUser(String accessToken,int page) throws Exception{
+        User user = userRepository.findByEmail(jwtService.extractEmail(accessToken)
+                        .orElseThrow(WrongJwtException::new))
+                .orElseThrow(NoUserException::new);
+        Slice<Board> boards = boardRepository.findByAuthor(user,PageRequest.of(page,10));
         return boards.map(boardMap::toListDto);
     }
 
@@ -196,7 +200,7 @@ public class BoardServiceImpl implements BoardService {
         User user = userRepository.findByEmail(jwtService.extractEmail(accessToken)
                         .orElseThrow(WrongJwtException::new))
                 .orElseThrow(NoUserException::new);
-        Slice<Board> boards = boardRepository.findByLikedUserId(user,PageRequest.of(page,10));
+        Slice<Board> boards = boardRepository.findByLikedUser(user,PageRequest.of(page,10));
         return boards.map(boardMap::toListDto);
     }
 
@@ -205,7 +209,7 @@ public class BoardServiceImpl implements BoardService {
         User user = userRepository.findByEmail(jwtService.extractEmail(accessToken)
                         .orElseThrow(WrongJwtException::new))
                 .orElseThrow(NoUserException::new);
-        Slice<Board> boards = boardRepository.findByScrapedUserId(user,PageRequest.of(page,10));
+        Slice<Board> boards = boardRepository.findByScrapedUser(user,PageRequest.of(page,10));
         return boards.map(boardMap::toListDto);
     }
 
