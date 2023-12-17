@@ -49,3 +49,4 @@ out/
 
 
 /src/main/resources/ssl/keystore.p12
+/src/main/resources/ssl/
