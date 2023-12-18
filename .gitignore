@@ -6,6 +6,7 @@ HELP.md
 images/
 logs/
 mysql/
+build/
 
 application.yml
 application-deploy.yml
